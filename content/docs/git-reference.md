@@ -3,7 +3,7 @@ title: "Appendix - Git Reference"
 weight: 999
 date: 2025-02-02
 draft: false
-url: "/git-reference/"
+#url: "/git-reference/"
 ---
 
 1. 커밋 메시지 작성 예시

@@ -3,7 +3,7 @@ title: "환경설정"
 weight: 1
 date: 2025-02-02
 draft: false
-url: "/cicd-config-env/"
+#url: "/cicd-config-env/"
 ---
 ---
 ## 내 컴퓨터 실행 환경 준비
