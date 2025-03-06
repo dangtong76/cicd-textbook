@@ -9,9 +9,16 @@ draft: false
 ## 내 컴퓨터 실행 환경 준비
 이번 챕터 에서는 우리가 실습하기 위해  내 컴퓨터에 최소한의 필수 유틸리티를 설치합니다.
 실습을 위한 필수 설치 목록은 아래와 같습니다.
+- **Visual Studio Code**
 - **Github 클라이언트**
 - **컨테이너 런타임**
 - **IDE 컨테이너 실행**
+
+### Visual Studio Code 설치
+[Visual Studio Code Download](https://code.visualstudio.com/download)
+
+### Git 설치
+[Git Download](https://git-scm.com/downloads)
 ### Github 클라이언트 설치
 - CLI 이용한 설치
 ```bash
@@ -25,6 +32,20 @@ winget install --id GitHub.cli
 ```
 - 인스톨러를 이용한 설치
 인스톨러를 이용한 설치파일은 :  https://github.com/cli/cli/releases/ 에서 다운로드 가능
+- gh cli 인증하기
+```bash
+gh auth login
+
+# 인증 과정은 아래와 같습니다.
+
+# Where do you use GitHub? GitHub.com 선택 ⮐
+# What is your preferred protocol for Git operations on this host? HTTPS 선택 ⮐
+# Authenticate Git with your GitHub credentials? (Y/n) Y 선택 ⮐
+# Login with a web browser ⮐
+# First copy your one-time code: XXXX-XXXX (코드를 그대로 복사)
+# https://github.com/login/device 에 접속하여 코드 입력 후 인증
+```
+
 ### 컨테이너 런타임 설치
 1. 도커 데스크탑
    
@@ -36,6 +57,7 @@ winget install --id GitHub.cli
 1. Git 리포지토리 포크 하기
    ```bash
    gh repo fork --clone=true https://github.com/dangtong76/devops-cicd.git
+   git clone https://github.com/dangtong76/devops-cicd.git
    ```
 
 1. 컨테이너 실행
