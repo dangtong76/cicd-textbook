@@ -1,5 +1,5 @@
 ---
-weight: 2
+weight: 3
 title: "CI/CD 시작하기"
 description: ""
 icon: "article"

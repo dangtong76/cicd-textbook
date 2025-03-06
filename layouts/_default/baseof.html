@@ -61,5 +61,8 @@ If so, collect and consolidate the items config from each enabled instance
         </script>
         {{ end }}
 
+        {{ $copyToClipboard := resources.Get "js/copy-to-clipboard.js" | minify | fingerprint }}
+        <script src="{{ $copyToClipboard.Permalink }}" integrity="{{ $copyToClipboard.Data.Integrity }}"></script>
+
     </body>
 </html>

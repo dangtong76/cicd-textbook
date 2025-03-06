@@ -1,5 +1,5 @@
 ---
-weight: 3
+weight: 4
 title: "파이프라인 실습 1"
 description: ""
 icon: "article"
