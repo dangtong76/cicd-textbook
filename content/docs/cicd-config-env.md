@@ -67,6 +67,7 @@ gh auth login
 
 1. 도커볼륨 생성
    ```bash
+   # 도커볼륨 생성
    docker volume create  \
    --opt device="<your-home-directory>/CICD/devops-cicd/ide/local-storage/devops-cicd-apps" \
    --opt o=bind --opt type=none devops-cicd-apps
@@ -75,10 +76,16 @@ gh auth login
    --opt device="<your-home-directory>/CICD/devops-cicd/ide/local-storage/devops-cicd-vscode" \
    --opt o=bind --opt type=none devops-cicd-vscode
    
-   
    # 볼륨 생성 확인
    docker volume ls
    ```
+
+
+
+
+
+
+
 
    
    아래는 IDE 컨테이너 환경에 대한 슬라이드 입니다. 
