@@ -56,11 +56,33 @@ gh auth login
 ### IDE 환경 만들기
 1. Git 리포지토리 포크 하기
    ```bash
+  
+   # 직접 리포지토리 방문해서 포크 하기 (https://github.com/dangtong76/devops-cicd)
+   # gh 명령어를 이용해서 리포지토리 포크 하기
    gh repo fork --clone=true https://github.com/dangtong76/devops-cicd.git
+   
+   # 리포지토리 포크 후 로컬 리포지토리 클론 하기
    git clone https://github.com/dangtong76/devops-cicd.git
    ```
 
-1. 컨테이너 실행
+1. 도커볼륨 생성
+   ```bash
+   docker volume create  \
+   --opt device="/Users/dangtongbyun/Library/CloudStorage/GoogleDrive-dbyun@redhat.com/내 드라이브/05.Lecture/cicd/cloud-cicd/src" \
+   --opt o=bind --opt type=none cloud-cicd-src
+   
+   docker volume create  \
+   --opt device="/Users/dangtongbyun/Library/CloudStorage/GoogleDrive-dbyun@redhat.com/내 드라이브/05.Lecture/cicd/cloud-cicd/vscode" \
+   --opt o=bind --opt type=none vscode
+   
+   docker volume create  \
+   --opt device="/Users/dangtongbyun/Library/CloudStorage/GoogleDrive-dbyun@redhat.com/내 드라이브/05.Lecture/cicd/cloud-cicd/jenkins" \
+   --opt o=bind --opt type=none jenkins-home
+   
+   # 볼륨 생성 확인
+   docker volume ls
+   ```
+
    
    아래는 IDE 컨테이너 환경에 대한 슬라이드 입니다. 
    <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRwGw0Fcyu00fiL6wtdmW7KNxcaEqu1uT5xZ8Aa_7Wgo409F3qZJwfkgot8983ZQ7Tc_M6r982N8S0p/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
