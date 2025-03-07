@@ -6,7 +6,7 @@ uglyURLs = false
 cleanDestinationDir = true
 enableEmoji = true
 # relativeURLs = true
-# canonifyURLs = true
+canonifyURLs = true
 
 [module]
   [module.hugoVersion]
