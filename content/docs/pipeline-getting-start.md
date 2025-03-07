@@ -188,7 +188,7 @@ gh repo create cicd-test --public --clone
       show-working-directory:
         runs-on: ubuntu-latest
         steps:
-          - name: List Files in current working directory
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (리눅스)
             run: |
               pwd
               ls -a
@@ -204,7 +204,7 @@ gh repo create cicd-test --public --clone
       show-working-directory-linux:
         runs-on: ubuntu-latest
         steps:
-          - name: List Files in current working directory
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (리눅스)
             run: |
               pwd
               ls -a
@@ -214,7 +214,7 @@ gh repo create cicd-test --public --clone
       show-working-directory-win:
         runs-on: windows-latest
         steps:
-          - name: Display Working Directory & List Files
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (윈도우)
             run: |
               Get-Location
               dir
@@ -234,7 +234,7 @@ gh repo create cicd-test --public --clone
       show-working-directory-linux:
         runs-on: ubuntu-latest
         steps:
-          - name: List Files in current working directory
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (리눅스)
             run: |
               pwd
               ls -a
@@ -244,7 +244,7 @@ gh repo create cicd-test --public --clone
       show-working-directory-win:
         runs-on: windows-latest
         steps:
-          - name: Display Working Directory & List Files
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (윈도우)
             run: |
               Get-Location
               dir
@@ -254,15 +254,121 @@ gh repo create cicd-test --public --clone
    ```
 5. Job Level Default shell 지정 및 Override1
 
-
+    ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    defaults:  # Workflow Level defaults
+      run:
+        shell: bash
+    jobs:
+      show-working-directory-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (리눅스)
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPACE
+      show-working-directory-win:
+        runs-on: windows-latest
+        defaults:  # Job Level Defaults
+          run:
+            shell: pwsh
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (윈도우)
+            run: |
+              Get-Location
+              dir
+              echo $env:GITHUB_SHA
+              echo $env:GITHUB_REPOSITORY
+              echo $env:GITHUB_WORKSPACE
+    ```
 6. Job Level Default shell 지정 및 Override2
 
+    ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    defaults:  # Workflow Level defaults
+      run:
+        shell: bash
+    jobs:
+      show-working-directory-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (리눅스)
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPACE
+      show-working-directory-win:
+        runs-on: windows-latest
+        defaults:  # Job Level Defaults
+          run:
+            shell: pwsh
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기 (윈도우)
+            run: |
+              Get-Location
+              dir
+              echo $env:GITHUB_SHA
+              echo $env:GITHUB_REPOSITORY
+              echo $env:GITHUB_WORKSPACE
+          - name: Python Shell 
+            shell: python  # Step Level Default Shell
+            run: |
+              import platform 
+              print(platform.processor())
+    ```
 7. Change Working Directory
+
+    ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    defaults:  # Workflow Level defaults
+      run:
+        shell: bash
+    jobs:
+      show-working-directory-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPACE
+          - name: 워킹 디렉토리 변경
+            working-directory: /home/runner
+            run: pwd
+      show-working-directory-win:
+        runs-on: windows-latest
+        defaults:  # Job Level Defaults
+          run:
+            shell: pwsh
+        steps:
+          - name: 현재 워킹디렉토리에서 파일 목록 보기
+            run: |
+              Get-Location
+              dir
+              echo $env:GITHUB_SHA
+              echo $env:GITHUB_REPOSITORY
+              echo $env:GITHUB_WORKSPACE
+          - name: 파이썬 쉘
+            shell: python  # Step Level Default Shell
+            run: |
+              import platform 
+              print(platform.processor())
+    ```
 
 
 ### 연습문제 2-2
 
-1. 다중 쉘 환경 실습
+1. 다중 쉘 환경 실습 (windows-latest)
 
     하나의 작업에서 다음 셀들을 순차적으로 사용하여 시스템 정보를 출력하세요
 
