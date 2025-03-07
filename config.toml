@@ -1,4 +1,4 @@
-baseURL = '/'
+baseURL = 'https://dangtong76.github.io/cicd-textbook/'
 languageCode = 'ko-kr'
 title = 'CICD TextBook'
 contentDir = 'content'
