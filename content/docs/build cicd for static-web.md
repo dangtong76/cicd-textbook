@@ -38,8 +38,8 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
 3. 리포지토리 클론
    
    ```bash
-   git clone --branch start --single-branch https://github.com/dangtongs/simple-web.git simple-web-app
-   cd simple-web-app
+   git clone --branch main --single-branch https://github.com/<your-github-id>/simple-web.git simple-web
+   cd simple-web
    ```
 
 4. 워크플로우 디렉토리 생성
@@ -230,7 +230,7 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
       on:
         push:
           branches:
-            - start
+            - main
       jobs:
         deploys:
           runs-on: ubuntu-latest
