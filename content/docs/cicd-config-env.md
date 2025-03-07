@@ -1,5 +1,5 @@
 ---
-title: "환경설정"
+title: "1. 환경설정"
 weight: 1
 date: 2025-02-02
 draft: false
@@ -19,6 +19,7 @@ draft: false
 
 ### Git 설치
 [Git Download](https://git-scm.com/downloads)
+
 ### Github 클라이언트 설치
 - CLI 이용한 설치
 ```bash
