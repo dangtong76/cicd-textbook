@@ -65,20 +65,43 @@ gh auth login
    git clone https://github.com/dangtong76/devops-cicd.git
    ```
 
-1. 도커볼륨 생성
+2. 도커볼륨 생성
    ```bash
    # 도커볼륨 생성
-   docker volume create  \
-   --opt device="<your-home-directory>/CICD/devops-cicd/ide/local-storage/devops-cicd-apps" \
-   --opt o=bind --opt type=none devops-cicd-apps
+   docker volume create --opt device="<your-home-directory>\CICD\devops-cicd\ide\local-storage\devops-cicd-apps" --opt o=bind --opt type=none devops-cicd-apps
    
-   docker volume create  \
-   --opt device="<your-home-directory>/CICD/devops-cicd/ide/local-storage/devops-cicd-vscode" \
-   --opt o=bind --opt type=none devops-cicd-vscode
+   docker volume create --opt device="<your-home-directory>\CICD\devops-cicd\ide\local-storage\devops-cicd-vscode" --opt o=bind --opt type=none devops-cicd-vscode
    
    # 볼륨 생성 확인
    docker volume ls
    ```
+3. 도커 hub 계정 가입하고 IDE 이미지 빌드하기
+   [Docker Hub 계정 가입하기](https://hub.docker.com/)
+
+   ```bash
+   # Docker Hub 로그인
+   docker login --username dangtong76
+
+   # 이미지 빌드
+   docker build -t <your-dockerhub-id>/cloud-cicd-ide:latest .
+
+   # 플랫폼 별 이미지 빌드 (옵셔널)
+   docker buildx build  --platform linux/amd64,linux/arm64  -t <your-dockerhub-id>/cloud-cicd-ide --push .
+
+   # 이미지 푸시
+   docker push <your-dockerhub-id>/cloud-cicd-ide:latest
+   ```
+4. Docker Compose 이용한 IDE 컨테이너 실행
+   ```bash
+   # 도커 컴포즈 파일 실행
+   docker compose up -d
+   ```
+5. IDE 접속하기
+   http://localhost:8444 에 접속합니다.
+
+
+
+
 
 
 
