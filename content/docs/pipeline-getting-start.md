@@ -40,21 +40,21 @@ gh repo create cicd-test --public --clone
 
    파일명은 .github/workflows/first-workflow.yml 으로 작성 합니다.
 
-```yaml
-name: first-workflow
-on: [push]
+    ```yaml
+    name: first-workflow
+    on: [push]
 
-jobs:
-  shell-cmd-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: echo Hello
-        run: echo "Hello World"
-      - name: multiple line cmd
-        run: |
-          node -v
-          npm -v
-```
+    jobs:
+      shell-cmd-job:
+        runs-on: ubuntu-latest
+        steps:
+          - name: echo Hello
+            run: echo "Hello World"
+          - name: multiple line cmd
+            run: |
+              node -v
+              npm -v
+    ```
 
 3. 리포지토리 동기화 하기
    
@@ -118,7 +118,7 @@ jobs:
    gh run view <run-id> 
    ```
 
-### 연습문제
+### 연습문제 2-1
 
 다음 요구사항에 맞는 GitHub Actions 워크플로우 파일을 작성하세요:
 
@@ -126,6 +126,7 @@ jobs:
 - push와 pull_request 이벤트에서 실행되도록 설정
 - ubuntu-latest 환경에서 실행
 - Python 버전을 출력하고, pip 버전을 확인하는 단계 포함 (python —version, pip —version)
+
 
 
 ### 워크 플로우 명령어 사용하기
@@ -176,3 +177,4 @@ jobs:
               echo "Inside group 3"
               echo "::endgroup::"
    ```  
+3. 워킹 디렉토리 지정과 쉘사용

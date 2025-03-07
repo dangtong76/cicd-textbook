@@ -35,6 +35,12 @@ draft: false
 
     # 커밋 히스토리 보기
     git log 
+
+    # 스테이징 영역 전체 삭제
+    git reset HEAD .
+
+    # 스테이징 영역 특정 파일 삭제
+    git reset HEAD <file>
     ```
 
 2. gh 명령어 모음
