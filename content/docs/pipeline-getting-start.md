@@ -364,7 +364,7 @@ gh repo create cicd-test --public --clone
               import platform 
               print(platform.processor())
     ```
-
+---
 
 ### 연습문제 2-2
 
@@ -388,3 +388,64 @@ gh repo create cicd-test --public --clone
     *2. test_folder 안에 sample.txt 파일 생성* 
 
     *3. working-directory를 사용하여 디렉토리 이동 후 파일 내용 확인 (cat sample.txt)*
+---
+
+### Expression & Context & Environment Variables
+
+
+#### GitHub Actions의 Context
+GitHub Actions에서 Context는 워크플로우 실행 중에 접근할 수 있는 정보의 집합입니다. Context를 사용하면 워크플로우, 작업, 단계, 러너 등에 관한 정보에 접근할 수 있습니다.
+#### 주요 Context 종류
+- github Context
+    - GitHub 이벤트, 리포지토리, 워크플로우에 관한 정보를 포함
+    - 예: github.event_name, github.repository, github.actor
+
+- env Context
+    - 워크플로우, 작업, 단계에서 설정된 환경 변수에 접근
+    - 예: env.MY_VARIABLE
+- job Context
+    - 현재 실행 중인 작업에 관한 정보
+    - 예: job.status
+- steps Context
+    - 현재 작업의 단계에 관한 정보와 출력
+    - 예: steps.step_id.outputs.output_name
+- runner Context
+    - 워크플로우를 실행하는 러너에 관한 정보
+    - 예: runner.os, runner.temp
+- secrets Context
+    - 리포지토리와 조직 비밀에 접근
+    - 예: secrets.MY_SECRET
+- matrix Context
+    - 매트릭스 전략으로 정의된 속성에 접근
+    - 예: matrix.os, matrix.version
+- needs Context
+    - 현재 작업의 의존성으로 정의된 작업의 출력에 접근
+    - 예: needs.job_id.outputs.output_name
+
+1. Expression & Context
+
+    ```yaml
+    name: Expression & Context
+    on: [push]
+    run-name: "Expression & Context executedby @${{ github.actor }}, event: ${{ github.event_name }}"
+    jobs:
+      using-expression-and-context:
+        runs-on: ubuntu-latest
+        steps: 
+          - name: Expression
+            id: expression
+            run: |
+              echo ${{ 1 }}
+              echo ${{ 1 > 2 }}
+              echo ${{ 'string' == 'string' }}
+              echo ${{ true && false }}
+              echo ${{ true || (false && true)}}
+          - name: Dump Context
+            run: |
+              echo 'github: ${{ toJson(github) }}'
+              echo 'job: ${{ toJson(job) }}'
+              echo 'secrets: ${{ toJson(secrets) }}'
+              echo 'runner: ${{ toJson(runner) }}'
+              echo 'steps: ${{ toJson(steps) }}'
+    ```
+    
