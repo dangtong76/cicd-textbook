@@ -100,6 +100,22 @@ gh auth login
    http://localhost:8444 에 접속합니다.
 
 
+### Visual Studio Code Extension 설치
+
+- Thunder client : REST API 용
+- Github 관련
+  - Github
+  - Github Actions
+  - Github Pull Requests
+- JAVA 관련
+   - Debugger for Java
+   - Gradle for Java
+   - Spring Boot Extension Pack
+- HashiCorp Terraform
+
+### Indent 설정하기
+
+VSCode 에서 Manage () → settings → editor.tab 으로 검색해서 → Editor: Tab Size 를 2로 설정
 
 
 
@@ -117,6 +133,3 @@ gh auth login
 
 <!-- {{< figure src="/images/test.jpeg" alt="test image" >}} -->
 
-2. Github 에서 리포지토리 Fork 하기
-   
-   안녕하세요
