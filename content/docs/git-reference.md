@@ -73,3 +73,28 @@ draft: false
     # 리포지토리 생성
     gh repo create <REPO_NAME> --public
     ```
+3. Terraform 명령어 모음
+
+    ```bash
+    # 초기화    
+    terraform init
+
+    # 계획 확인
+    terraform plan
+
+    # 적용
+    terraform apply
+    ```
+
+4. AWS CLI 명령어 모음
+
+    ```bash
+    # 인증정보 설정
+    aws configure
+
+    # 인증정보 확인
+    aws sts get-caller-identity
+
+    # 인증정보 삭제
+    aws configure delete profile --profile <profile-name> 
+    ``` 
