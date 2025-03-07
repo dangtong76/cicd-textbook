@@ -278,7 +278,7 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
 
 1. EC2용 IAM 역할 생성하기
    AWS 콘솔에서 : IAM → 역할 → 역할생성
-  {{< figure src="/images/1-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/1-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 2. 역할 생성 화면에서 아래와 같이 [ AWS 서비스 | 서비스 또는 사용사례 = EC2 |  사용사례 = EC2 ]  선택 → 다음
   {{< figure src="/images/2-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
