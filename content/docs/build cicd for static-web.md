@@ -2,7 +2,7 @@
 title: "3. 정적 웹사이트 파이프라인 구성"
 weight: 3
 date: 2025-02-02
-draft: true
+draft: false
 #url: "/cicd-config-env/"
 
 ---
