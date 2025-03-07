@@ -281,25 +281,25 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
   {{< figure src="/cicd-textbook/images/1-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 2. 역할 생성 화면에서 아래와 같이 [ AWS 서비스 | 서비스 또는 사용사례 = EC2 |  사용사례 = EC2 ]  선택 → 다음
-  {{< figure src="/images/2-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/2-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 3. AWSCodeDeployFullAccess  및 AmazonS3FullAccess 정책 추가 → 다음
-  {{< figure src="/images/3-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/3-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 4. 역할이름 : simple-web-ec2-deploy-role → 다음
-  {{< figure src="/images/4-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/4-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 ### 2. CodeDeploy용 IAM 역할 생성
 
 2. AWS 콘솔에서 : IAM → 역할 → 역할생성
   역할생성 화면에서 : [AWS 서비스 | 서비스 또는 사용사례 = CodeDeploy  | 사용사례 = CodeDeploy ] 
-  {{< figure src="/images/5-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/5-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 2. 내용 확인하고 → 다음
-  {{< figure src="/images/6-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/6-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 2. 역할 이름 : simple-web-codedeploy-role 입력 → 역할생성 버튼 클릭
-  {{< figure src="/images/7-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/7-iam.png" alt="IAM 이미지" class="img-fluid" width="80%">}}
 
 ### 3. Terrafrom 코드로 EC2 인스턴스 생성 하기
 1. Terraform 코드 작성 (main.tf)
@@ -403,19 +403,19 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
 
 EC2 → 인스턴스  → 인스턴스 ID  → 작업  → 보안  → IAM 역할수정  → IAM 역할 선택 → simple-web-ec2-deploy-role 선택  → IAM 역할 업데이트
 
-  {{< figure src="/images/8-iam.png" alt="IAM 이미지" class="img-fluid" width="80%" >}}
+  {{< figure src="/cicd-textbook/images/8-iam.png" alt="IAM 이미지" class="img-fluid" width="80%" >}}
 
 ### 5. S3 버킷 만들기
   S3 화면에서  → 버킷 만들기 클릭
   버킷이름 : simple-web-content 
   나머지는 모두 Default 로 생성
 
-  {{< figure src="/images/9-s3.png" alt="S3 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/9-s3.png" alt="S3 이미지" class="img-fluid" width="80%">}}
 
 ### 6. CodeDeploy 애플리케이션 만들기
   codedeploy  → 애플리케이션  → 애플리케이션 생성
   애플리케이션 이름 : simple-web-content 
-  {{< figure src="/images/10-codedeploy.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/10-codedeploy.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
 
 ### 7. CodeDeploy 배포 그룹 만들기
 1. 배포 그룹 생성
@@ -426,7 +426,7 @@ EC2 → 인스턴스  → 인스턴스 ID  → 작업  → 보안  → IAM 역�
 
   서비스역할 : simple-web-codedeploy-role 
 
-  {{< figure src="/images/11-codedeploy-group.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/11-codedeploy-group.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
   
 2. 계속
 
@@ -438,7 +438,7 @@ EC2 → 인스턴스  → 인스턴스 ID  → 작업  → 보안  → IAM 역�
 
   **로드 밸런서 체크 박스 비활성화**
 
-  {{< figure src="/images/12-codedeploy-group.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
+  {{< figure src="/cicd-textbook/images/12-codedeploy-group.png" alt="CodeDeploy 이미지" class="img-fluid" width="80%">}}
 
 
 
