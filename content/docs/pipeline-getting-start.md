@@ -178,3 +178,107 @@ gh repo create cicd-test --public --clone
               echo "::endgroup::"
    ```  
 3. 워킹 디렉토리 지정과 쉘사용
+
+    리눅스 
+
+    ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    jobs:
+      show-working-directory:
+        runs-on: ubuntu-latest
+        steps:
+          - name: List Files in current working directory
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPACE
+    ```
+    윈도우 
+    ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    jobs:
+      show-working-directory-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - name: List Files in current working directory
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPAC
+      show-working-directory-win:
+        runs-on: windows-latest
+        steps:
+          - name: Display Working Directory & List Files
+            run: |
+              Get-Location
+              dir
+              echo $env:GITHUB_SHA
+              echo $env:GITHUB_REPOSITORY
+              echo $env:GITHUB_WORKSPACE
+    ```
+4. Job Level Default Shell 지정 (에러 발생)
+
+   ```yaml
+    name: Change Working Dir & Shell
+    on: [push]
+    defaults:  # Workflow Level defaults
+      run:
+        shell: bash
+    jobs:
+      show-working-directory-linux:
+        runs-on: ubuntu-latest
+        steps:
+          - name: List Files in current working directory
+            run: |
+              pwd
+              ls -a
+              echo $GITHUB_SHA
+              echo $GITHUB_REPOSITORY
+              echo $GITHUB_WORKSPACE
+      show-working-directory-win:
+        runs-on: windows-latest
+        steps:
+          - name: Display Working Directory & List Files
+            run: |
+              Get-Location
+              dir
+              echo $env:GITHUB_SHA
+              echo $env:GITHUB_REPOSITORY
+              echo $env:GITHUB_WORKSPACE
+   ```
+5. Job Level Default shell 지정 및 Override1
+
+
+6. Job Level Default shell 지정 및 Override2
+
+7. Change Working Directory
+
+
+### 연습문제 2-2
+
+1. 다중 쉘 환경 실습
+
+    하나의 작업에서 다음 셀들을 순차적으로 사용하여 시스템 정보를 출력하세요
+
+    *- bash: uname -a 실행*
+
+    *- pwsh: Get-ComputerInfo 실행*
+
+    *- python: sys.version 출력*
+
+    *- node: process.version 출력*
+
+2. 디렉토리 탐색 실습
+    *다음 작업을 수행하는 워크플로우를 작성하세요*
+
+    *1. /home/runner 디렉토리에 test_folder 생성*
+
+    *2. test_folder 안에 sample.txt 파일 생성* 
+
+    *3. working-directory를 사용하여 디렉토리 이동 후 파일 내용 확인 (cat sample.txt)*
