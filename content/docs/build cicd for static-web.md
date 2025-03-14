@@ -547,3 +547,22 @@ AWS_BUCKET
     sudo tail -f /var/log/aws/codedeploy-agent/codedeploy-agent.log
     ```
 
+## Simple Web 완벽하게 배포 하기
+
+## 연습문제
+Saasify 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 스타트업 회사 입니다. 
+이회사의 CTO인 당신은 회사 홈페이지를 최근 유행하는 Hugo 프레임워크와 테마를 이용해 만들기로 결정 했습니다.
+다음 요구사항을 만족하는 회사 홈페이지를 만들고, CI/CD 환경을 구축하세요
+1. Hugo 템플릿 다운로드 :  https://themes.gohugo.io/themes/hugo-saasify-theme/
+2. saasify-official 이라는 Github 리포지토리를 만들로 소스를 리포지토리에 업로드 하고 동기화 하세요
+3. 홈페이지를 서비스 할 수 있는 aws EC2 환경을 아래 조건을 만족 하도록 Terraform으로 구성하세요
+  - 
+4. 로컬 환경에 있는 컨텐츠를 리포지토리에 PUSH 하게 되면 AWS에 자동 배포 되도록 WORKFLOW 를 작성하세요. HUGO 프레임워크의 빌드 명령은 아래와 같습니다.
+  - Build 명령
+  ```bash
+  hugo --gc --minify --baseURL="http://your-domain.com/"
+  ```
+  - Build 후에 public 디렉토리만 웹서버에 업로드 하면 됨.
+
+
+   
