@@ -7,6 +7,9 @@ draft: false
 
 ---
 ---
+## 구축을 위한 디자인 컨셉
+  {{< figure src="/cicd-textbook/images/codedeploy.pdf" alt="IAM 이미지" class="img-fluid" width="80%">}}
+---
 ## Simple Web 무식하게 배포하기
 ---
 

@@ -113,4 +113,7 @@ draft: false
     # EC2 키확인 및 삭제
     aws ec2 describe-key-pairs --query 'KeyPairs[*].KeyName'
     aws ec2 delete-key-pair --key-name ec2-key
+
+    # deployment 리스트
+    aws deploy list-deployments
     ``` 
