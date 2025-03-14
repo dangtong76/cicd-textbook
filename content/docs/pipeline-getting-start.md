@@ -448,4 +448,41 @@ GitHub Actions에서 Context는 워크플로우 실행 중에 접근할 수 있�
               echo 'runner: ${{ toJson(runner) }}'
               echo 'steps: ${{ toJson(steps) }}'
     ```
-    
+## 워크플로우에서 리포지토리 다운로드
+### Action Set 사용해보기
+Action Set 스펙 참고 : https://github.com/actions/hello-world-javascript-action
+```yaml
+name: Simple Action
+on: [push]
+
+jobs:
+  simple-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simple JS Action
+        id: greet
+        uses: actions/hello-world-javascript-action@e76147da8e5c81eaf017dede5645551d4b94427b
+        with:
+          who-to-greet: Ali
+      - name: Log Greeting Time
+        run: echo "${{ steps.greet.outputs.time }}"
+```
+### 전통적인 방법으로 소스 다운로드
+```yaml
+name: Checkout
+on: [push]
+jobs:
+  checkout-and-display-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 파일목록 확인(git fetch 전)
+        run: ls -a
+      - name: 소스다운로드 (git fetch)
+        run: |
+          git init
+          git remote add origin "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git"
+          git fetch origin
+          git checkout main
+      - name: 파일목록 확인(git fetch 후)
+        run: ls -a
+```
