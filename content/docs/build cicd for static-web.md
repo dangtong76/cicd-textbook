@@ -8,7 +8,7 @@ draft: false
 ---
 ---
 ## 구축을 위한 디자인 컨셉
-  {{< embed-pdf url="/cicd-textbook/images/codedeploy.pdf" >}}
+  {{< embed-pdf url="/cicd-textbook/pdfs/codedeploy.pdf" >}}
 
 ---
 ## Simple Web 무식하게 배포하기
