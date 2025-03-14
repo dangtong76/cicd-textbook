@@ -90,6 +90,12 @@ draft: false
 
     # 적용
     terraform apply
+
+    # 인스턴스 리스트
+    terraform state list
+
+    # 인스턴스 세부사항 조회
+    terraform state show aws_instance.nginx_instance
     ```
 
 4. AWS CLI 명령어 모음
@@ -103,4 +109,8 @@ draft: false
 
     # 인증정보 삭제
     aws configure delete profile --profile <profile-name> 
+
+    # EC2 키확인 및 삭제
+    aws ec2 describe-key-pairs --query 'KeyPairs[*].KeyName'
+    aws ec2 delete-key-pair --key-name ec2-key
     ``` 

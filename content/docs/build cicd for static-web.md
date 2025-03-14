@@ -33,23 +33,18 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
    gh auth switch # 필요 하다면 수행 
    
    gh repo fork https://github.com/dangtong76/simple-web.git
+
+   Would you like to clone the fork? Yes # 클론까지 한번에
+
+   # git clone  https://github.com/<your-github-id>/simple-web.git simple-web
    ```
 
-3. 리포지토리 클론
-   
-   ```bash
-   git clone --branch main --single-branch https://github.com/<your-github-id>/simple-web.git simple-web
-   cd simple-web
-   ```
 
-4. 워크플로우 디렉토리 생성
+3. 워크플로우 디렉토리 생성
    
    ```bash
    mkdir -p .github/workflows
    mkdir -p xinfra/aws-ec2-single
-   git add .
-   git commit -am "add workflow directory"
-   git push origin start
    ```
 
 5. Git 브랜치 표시 설정
