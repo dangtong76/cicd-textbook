@@ -8,6 +8,7 @@ draft: false
 ---
 ---
 ## 구축을 위한 디자인 컨셉
+  {{< embed-pdf url="/cicd-textbook/pdfs/what_container.pdf" >}}
   {{< embed-pdf url="/cicd-textbook/pdfs/codedeploy.pdf" >}}
 
 ---
