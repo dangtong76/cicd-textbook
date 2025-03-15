@@ -534,6 +534,39 @@ AWS_BUCKET
     chown -R nginx:nginx /usr/share/nginx/html
     systemctl restart nginx
     ```
+3. appspec.yml 등록하기
+    ```
+    version: 0.0
+    os: linux
+    files:
+      - source: /
+        destination: /usr/share/nginx/html/
+        overwrite: true
+    permissions:
+      - object: /usr/share/nginx/html
+        pattern: "**"
+        owner: nginx
+        group: nginx
+        mode: 755
+        type:
+          - directory
+      - object: /usr/share/nginx/html
+        pattern: "**/*"
+        owner: nginx
+        group: nginx
+        mode: 644
+        type:
+          - file
+    hooks:
+      BeforeInstall:
+        - location: scripts/before_install.sh
+          timeout: 300
+          runas: root
+      AfterInstall:
+        - location: scripts/after_install.sh
+          timeout: 300
+          runas: root
+    ```
 3. 리포지토리 동기화 하기
 
     ```bash
