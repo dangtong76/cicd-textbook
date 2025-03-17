@@ -954,7 +954,7 @@ output "codedeploy_deployment_group_name" {
 ---
 
 ## 연습문제
-Saasify 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 스타트업 회사 입니다. 
+ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 스타트업 회사 입니다. 
 이회사의 CTO인 당신은 회사 홈페이지를 최근 유행하는 Hugo 프레임워크와 테마를 이용해 만들기로 결정 했습니다.
 다음 요구사항을 만족하는 회사 홈페이지를 만들고, CI/CD 환경을 구축하세요
 1. Hugo 로컬 설정 (Optional)
@@ -963,23 +963,19 @@ Saasify 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
     - hugo cli 설치하고 환경변수 등록하기 : [hugo 설치](https://github.com/gohugoio/hugo/releases/tag/v0.145.0)
 1. Hugo 템플릿 적용하기 :  https://github.com/StefMa/hugo-fresh
     ```bash
-    hugo new site sassify
-    cd sassify
-    git init
-    git submodule add https://github.com/chaoming/hugo-saasify-theme themes/hugo-saasify-theme
-    cp -r themes/hugo-saasify-theme/exampleSite/* .
+    # Hugo 사이트 생성
+    hugo new site my-site && cd my-site
 
-    choco install nodejs.install
+    # Hugo 사이트 모듈 초기화
+    hugo mod init YOUR_MODULE_NAME
 
-    # copy package.json and other config files to your site root
-    cp themes/hugo-saasify-theme/package.json .
-    cp themes/hugo-saasify-theme/postcss.config.js .
-    cp themes/hugo-saasify-theme/tailwind.config.copy.js ./tailwind.config.js
+    # 기본 설정 파일 삭제
+    rm hugo.toml
 
-    # Install dependencies
-    npm install
+    # 설정 파일 다운로드
+    curl -O https://raw.githubusercontent.com/StefMa/hugo-fresh/master/exampleSite/hugo.yaml
 
-    # 로컬에서 시작해보기 
+    # 로컬 사이트 실행
     hugo server -D
 
     ```
