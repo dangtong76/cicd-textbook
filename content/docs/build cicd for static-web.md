@@ -3,8 +3,6 @@ title: "3. 정적 웹사이트 파이프라인 구성"
 weight: 3
 date: 2025-02-02
 draft: false
-#url: "/cicd-config-env/"
-
 ---
 ---
 ## 구축을 위한 디자인 컨셉
@@ -12,7 +10,7 @@ draft: false
   {{< embed-pdf url="/cicd-textbook/pdfs/codedeploy.pdf" >}}
 
 ---
-## Simple Web 무식하게 배포하기
+## 1. Simple Web 무식하게 배포하기
 ---
 
 Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번장에서는 가장 단순한 현태의 애플리케이션을 AWS 에 배포하는 파이프라인을 구성합니다.
@@ -273,7 +271,7 @@ Simple Web 은 정적 웹 페이지로 구성된 프로젝트입니다. 이번�
     
 
 ---
-## Simple Web 현명하게 배포하기
+## 2. Simple Web 현명하게 배포하기
 ### 1. EC2용 IAM 역할 생성하기
 
 1. EC2용 IAM 역할 생성하기
@@ -581,7 +579,7 @@ AWS_BUCKET
     sudo tail -f /var/log/aws/codedeploy-agent/codedeploy-agent.log
     ```
 ---
-## Simple Web 완벽하게 배포 하기
+## 3. Simple Web 완벽하게 배포 하기
 ### 1. 폴더 생성
 ```bash
 mkdir -p xinfra/aws-ec2-single-greate
@@ -953,7 +951,7 @@ output "codedeploy_deployment_group_name" {
 ```
 ---
 
-## 연습문제
+## 연습문제 3-1
 ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 스타트업 회사 입니다. 
 이회사의 CTO인 당신은 회사 홈페이지를 최근 유행하는 Hugo 프레임워크와 테마를 이용해 만들기로 결정 했습니다.
 다음 요구사항을 만족하는 회사 홈페이지를 만들고, CI/CD 환경을 구축하세요
@@ -980,16 +978,9 @@ ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
 
     ```
 
-2. saasify-official 이라는 Github 리포지토리를 만들로 소스를 리포지토리에 업로드 하고 동기화 하세요
+2. ailogy 이라는 Github 리포지토리를 만들고 소스를 리포지토리에 업로드 하고 동기화 하세요
 
-3. 홈페이지를 서비스 할 수 있는 aws EC2 환경을 아래 조건을 만족 하도록 Terraform으로 구성하세요
-
-4. 로컬 환경에 있는 컨텐츠를 리포지토리에 PUSH 하게 되면 AWS에 자동 배포 되도록 WORKFLOW 를 작성하세요. HUGO 프레임워크의 빌드 명령은 아래와 같습니다.
-    - Build 명령
-    ```bash
-    hugo --gc --minify --baseURL="http://your-domain.com/"
-    ```
-    - Build 후에는 public 디렉토리만 웹서버에 업로드 하면 됨.
+3. github 페이지에 배포 하는 workflow 를 작성하세요
     ```yml
     # Sample workflow for building and deploying a Hugo site to GitHub Pages
     name: Deploy Hugo site to Pages
@@ -1066,5 +1057,599 @@ ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
             id: deployment
             uses: actions/deploy-pages@v4
     ```
+---
+## 4. 쿠버네티스 배포를 위한 EKS 클러스터 생성하기
 
-   
+
+### 1. Provider 설정    
+```terraform
+provider "aws" {
+  profile = var.terraform_aws_profile
+  # access_key = var.aws_access_key_id
+  # secret_key = var.aws_secret_access_key
+  region = var.aws_region
+  default_tags {
+    tags = {
+      managed_by = "terraform"
+    }
+  }
+}
+```
+
+### 2. VPC 생성
+```terraform
+#########################################################################################################
+## Create a VPC
+#########################################################################################################
+resource "aws_vpc" "vpc" {
+  cidr_block           = "10.1.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags = {
+    Name = "${var.cluster_name}-vpc"
+  }
+}
+
+#########################################################################################################
+## Create Public & Private Subnet
+#########################################################################################################
+resource "aws_subnet" "public-subnet-a" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = "10.1.1.0/24"
+  availability_zone       = "ap-northeast-2a"
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "public-0"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                               = "1"
+    "kubernetes.io/role/alb"                               = "1"
+  }
+}
+
+resource "aws_subnet" "public-subnet-c" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.1.2.0/24"
+  availability_zone = "ap-northeast-2c"
+  tags = {
+    Name = "public-1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                               = "1"
+    "kubernetes.io/role/alb"                               = "1"
+  }
+}
+
+resource "aws_subnet" "private-subnet-a" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.1.3.0/24"
+  availability_zone = "ap-northeast-2a"
+  tags = {
+    Name                                        = "private-0"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = "1"
+  }
+}
+
+resource "aws_subnet" "private-subnet-c" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.1.4.0/24"
+  availability_zone = "ap-northeast-2c"
+  tags = {
+    Name                                        = "private-1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = "1"
+  }
+}
+
+#########################################################################################################
+## Create Internet gateway & Nat gateway
+#########################################################################################################
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "${var.cluster_name}-igw"
+  }
+}
+
+resource "aws_eip" "nat-eip" {
+  domain = "vpc"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_nat_gateway" "nat-gateway" {
+  subnet_id     = aws_subnet.public-subnet-a.id
+  allocation_id = aws_eip.nat-eip.id
+  tags = {
+    Name = "${var.cluster_name}-nat-gateway"
+  }
+}
+
+#########################################################################################################
+## Create Route Table & Route
+#########################################################################################################
+resource "aws_route_table" "public-rtb" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+  tags = {
+    Name = "${var.cluster_name}-public-rtb"
+  }
+}
+
+
+resource "aws_route_table_association" "public-rtb-assoc1" {
+  route_table_id = aws_route_table.public-rtb.id
+  subnet_id      = aws_subnet.public-subnet-a.id
+}
+
+resource "aws_route_table_association" "public-rtb-assoc2" {
+  route_table_id = aws_route_table.public-rtb.id
+  subnet_id      = aws_subnet.public-subnet-c.id
+}
+
+
+resource "aws_route_table" "private-rtb" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat-gateway.id
+  }
+  tags = {
+    Name = "${var.cluster_name}-private-rtb"
+  }
+}
+
+resource "aws_route_table_association" "private-rtb-assoc1" {
+  route_table_id = aws_route_table.private-rtb.id
+  subnet_id      = aws_subnet.private-subnet-a.id
+}
+
+resource "aws_route_table_association" "private-rtb-assoc2" {
+  route_table_id = aws_route_table.private-rtb.id
+  subnet_id      = aws_subnet.private-subnet-c.id
+}
+```
+### 3. Security Group 생성
+```terraform
+#########################################################################################################
+## Create Security Group
+#########################################################################################################
+resource "aws_security_group" "allow-ssh-sg" {
+  name        = "allow-ssh"
+  description = "allow ssh"
+  vpc_id      = aws_vpc.vpc.id
+}
+
+resource "aws_security_group_rule" "allow-ssh" {
+  from_port         = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.allow-ssh-sg.id
+  to_port           = 22
+  type              = "ingress"
+  description       = "ssh"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group" "public-sg" {
+  name        = "public-sg"
+  description = "allow all ports"
+  vpc_id      = aws_vpc.vpc.id
+}
+
+resource "aws_security_group_rule" "allow-all-ports" {
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.public-sg.id
+  to_port           = 0
+  type              = "ingress"
+  description       = "all ports"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "allow-all-ports-egress" {
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.public-sg.id
+  to_port           = 0
+  type              = "egress"
+  description       = "all ports"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+```
+### 4. IAM Role 생성
+```terraform
+resource "aws_iam_role" "ec2_role" {
+    
+  name = "cwave_ec2_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+# ECR PowerUser 정책 연결
+resource "aws_iam_role_policy_attachment" "ecr_poweruser" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+}
+######################################################################################################################
+# IAM Policy 설정
+######################################################################################################################
+data "http" "iam_policy" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.6.2/docs/install/iam_policy.json"
+}
+
+resource "aws_iam_role_policy" "cwave-eks-controller" {
+  name_prefix = "AWSLoadBalancerControllerIAMPolicy"
+  role        = module.lb_controller_role.iam_role_name
+  policy      = data.http.iam_policy.response_body
+}
+```
+### 5. Helm 이용 추가 설치
+```terraform
+######################################################################################################################
+# Kubernetes
+######################################################################################################################
+data "aws_eks_cluster" "cluster" {
+  name = module.eks.cluster_name
+  depends_on = [module.eks.cluster_name]
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_name
+  depends_on = [module.eks.cluster_name]
+}
+
+provider "kubernetes" {
+  alias                  = "cwave-eks"
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  # token                  = data.aws_eks_cluster_auth.cluster.token
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args = [
+      "eks",
+      "get-token",
+      "--cluster-name",
+      var.cluster_name,
+      "--region",
+      var.aws_region,
+      "--profile",
+      var.terraform_aws_profile
+    ]
+  }
+}
+
+######################################################################################################################
+# 헬름차트
+# 쿠버네티스 클러스터 추가 될때마다 alias 를 변경해서 추가해주기
+######################################################################################################################
+provider "helm" {
+  alias = "cwave-eks-helm"
+
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    token                  = data.aws_eks_cluster_auth.eks_cluster_auth.token
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args = [
+        "eks",
+        "get-token",
+        "--cluster-name",
+        module.eks.cluster_name,
+        "--region",
+        var.aws_region,
+        "--profile",
+        var.terraform_aws_profile
+      ]
+    }
+  }
+}
+
+########################################################################################
+#   Helm release : alb
+########################################################################################
+resource "helm_release" "eks_common_alb" {
+  provider   = helm.cwave-eks-helm
+  name       = "aws-load-balancer-controller"
+  chart      = "aws-load-balancer-controller"
+  version    = "1.6.2"
+  repository = "https://aws.github.io/eks-charts"
+  namespace  = "kube-system"
+
+  dynamic "set" {
+    for_each = {
+      "clusterName"                                               = var.cluster_name
+      "serviceAccount.create"                                     = "true"
+      "serviceAccount.name"                                       = "aws-load-balancer-controller"
+      "region"                                                    = var.aws_region
+      "vpcId"                                                     = aws_vpc.vpc.id
+      "image.repository"                                          = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/amazon/aws-load-balancer-controller"
+      "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn" = module.lb_controller_role.iam_role_arn
+    }
+
+    content {
+      name  = set.key
+      value = set.value
+    }
+  }
+  depends_on = [
+    module.eks,
+    module.lb_controller_role
+  ]
+}
+########################################################################################
+#   Helm release : efs csi driver
+########################################################################################
+
+resource "helm_release" "aws_efs_csi_driver" {
+  provider   = helm.cwave-eks-helm
+  chart      = "aws-efs-csi-driver"
+  name       = "aws-efs-csi-driver"
+  namespace  = "kube-system"
+  repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+
+  set {
+    name  = "image.repository"
+    value = "602401143452.dkr.ecr.eu-west-3.amazonaws.com/eks/aws-efs-csi-driver"
+  }
+
+  set {
+    name  = "controller.serviceAccount.create"
+    value = true
+  }
+
+  set {
+    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = module.attach_efs_csi_role.iam_role_arn
+  }
+
+  set {
+    name  = "controller.serviceAccount.name"
+    value = "efs-csi-controller-sa"
+  }
+}
+module "attach_efs_csi_role" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+
+  role_name             = "efs-csi"
+  attach_efs_csi_policy = true
+
+  oidc_providers = {
+    ex = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:efs-csi-controller-sa"]
+    }
+  }
+}
+
+resource "aws_security_group" "allow_nfs" {
+  name        = "allow nfs for efs"
+  description = "Allow NFS inbound traffic"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description = "NFS from VPC"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.vpc.cidr_block]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+}
+
+
+resource "aws_efs_file_system" "stw_node_efs" {
+  creation_token = "efs-for-stw-node"
+}
+
+
+resource "aws_efs_mount_target" "stw_node_efs_mt_0" {
+  file_system_id  = aws_efs_file_system.stw_node_efs.id
+  subnet_id       = aws_subnet.private-subnet-a.id
+  security_groups = [aws_security_group.allow_nfs.id]
+}
+
+resource "aws_efs_mount_target" "stw_node_efs_mt_1" {
+  file_system_id  = aws_efs_file_system.stw_node_efs.id
+  subnet_id       = aws_subnet.private-subnet-c.id
+  security_groups = [aws_security_group.allow_nfs.id]
+}      
+```
+### 6. .gitignore 파일 생성
+```
+.terraform
+.terraform.lock.hcl
+terraform.tfvars
+.terraform.tfstate
+```
+---
+
+### 7. Terraform 적용
+```bash
+terraform init
+terraform plan
+terraform apply
+``` 
+
+### 8. 리포지토리 동기화
+```bash
+git add .
+git commit -m "add terraform"
+git push origin main
+```
+---
+## 5. Simple WEB 쿠버네티스에 배포 하기
+### 1. Docker 파일 작성
+```dockerfile
+FROM nginx:alpine
+
+# 기존 nginx 기본 페이지 제거
+RUN rm -rf /usr/share/nginx/html/*
+
+# 웹 파일들을 컨테이너로 복사
+COPY index.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
+COPY assets/ /usr/share/nginx/html/assets/
+COPY scripts/ /usr/share/nginx/html/scripts/
+
+# nginx 포트 노출
+EXPOSE 80
+
+# nginx 실행
+CMD ["nginx", "-g", "daemon off;"]
+```
+### 2. 컨테이너 이미지 빌드
+```bash
+docker build -t <your-dockerhub-id>/simple-web .
+```
+### 3. 컨테이너 이미지 푸시
+```bash
+docker login --username <your-dockerhub-id>
+docker push <your-dockerhub-id>/simple-web
+```
+### 4. 쿠버네티스 배포
+1. simple-web-deploy.yaml 파일 생성
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-web
+  labels:
+    app: simple-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-web
+  template:
+    metadata:
+      labels:
+        app: simple-web
+    spec:
+      containers:
+        - name: simple-web
+          image: <your-dockerhub-id>/simple-web
+          ports:
+            - containerPort: 80 
+```
+3. simple-web-ingress.yaml 파일 생성
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-web-lb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+spec:
+  type: LoadBalancer
+  selector:
+    app: simple-web
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 800
+  ports:
+    - name: simple-web
+      protocol: TCP
+      port: 80
+      targetPort: 80
+```
+4. 
+
+### 5. Github workflow 작성
+```yml
+name: simple-web-eks-ci
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/simple-web
+      DOCKER_TAG: ${{ github.run_number }}
+
+    steps:
+      - name: 1.소스코드 다운로드
+        uses: actions/checkout@v4 
+
+      - name: 7.Docker Image Build
+        run: docker build  -t ${{ secrets.DOCKER_USERNAME }}/simple-web:${{ env.DOCKER_TAG }} .
+
+      - name: 8.Docker Login
+        uses: docker/login-action@v3.0.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          logout: true
+
+      - name: 9.Docker Push
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/simple-web:${{ env.DOCKER_TAG }}
+
+      # 서비스 리포지토리 체크아웃
+      - name: 10.서비스 리포지토리 체크아웃
+        uses: actions/checkout@v4
+        with:
+          repository: dangtong-s-inc/simple-service  
+          ref: main
+          path: .
+          token: ${{ secrets.PAT }} 
+      
+      # 이미지 태그 업데이트
+      - name: 11.쿠버네티스 매니페스트 파일 이미지 태그 업데이트
+        run: |
+          # 파일이 존재하는지 확인
+          ls -la
+          # 현재 파일 내용 확인
+          cat simple-deploy.yaml
+          sed -i "s|image: ${{ secrets.DOCKER_USERNAME }}\/simple-web.*|image: ${{ secrets.DOCKER_USERNAME }}\/simple-web:${{ env.DOCKER_TAG }}|g" simple-deploy.yaml
+          # 변경된 내용 확인
+          cat simple-deploy.yaml
+      
+      # 변경사항 커밋 및 푸시
+      - name: 12.서비스 리포지토리 변경사항 커밋 및 푸시
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "Update image tag to ${{ env.DOCKER_TAG }}"
+          git remote set-url origin https://${{ secrets.PAT }}@github.com/dangtong-s-inc/simple-service.git
+          
+          git push origin main
+```
