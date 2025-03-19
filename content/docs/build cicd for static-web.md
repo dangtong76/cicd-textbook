@@ -962,10 +962,10 @@ ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
 1. Hugo 템플릿 적용하기 :  https://github.com/StefMa/hugo-fresh
     ```bash
     # Hugo 사이트 생성
-    hugo new site my-site && cd my-site
+    hugo new site ailogy && cd ailogy
 
     # Hugo 사이트 모듈 초기화
-    hugo mod init YOUR_MODULE_NAME
+    hugo mod init github.com/dangtong76/ailogy
 
     # 기본 설정 파일 삭제
     rm hugo.toml
@@ -973,9 +973,11 @@ ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
     # 설정 파일 다운로드
     curl -O https://raw.githubusercontent.com/StefMa/hugo-fresh/master/exampleSite/hugo.yaml
 
-    # 로컬 사이트 실행
+    # 로컬 사이트 실행 (Windows)
     hugo server -D
-
+    
+    # 컨테이너 IDE
+    hugo server --bind 0.0.0.0 --baseURL=http://localhost --port 1314 -D
     ```
 
 2. ailogy 이라는 Github 리포지토리를 만들고 소스를 리포지토리에 업로드 하고 동기화 하세요
