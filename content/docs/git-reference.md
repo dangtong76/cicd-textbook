@@ -21,6 +21,9 @@ draft: false
     # 로컬 커밋들을 원격 저장소로 업로드 및 update, "원격 추적 브렌치 update" 
     git push origin main 
 
+    # 로컬 커밋들을 원격 저장소로 강제 업로드 및 update, "원격 추적 브렌치 update" 
+    git push origin main 
+
     # 원격 저장소 main 브렌치 내용을 "원격 추적 브렌치 fetch", "현재 브렌치 merge", "작업 디렉토리 update" 
     git pull origin main 
 
@@ -41,6 +44,16 @@ draft: false
 
     # 스테이징 영역 특정 파일 삭제
     git reset HEAD <file>
+
+    # 브렌치 삭제
+    git branch -d <branch name>
+
+    # 병합되지 않는 브렌치 삭제
+    git branch -D <branch name>
+    
+    # 원격 브랜치 삭제
+    git push origin --delete <branch name>
+    git fetch -p # 삭제후 로컬 동기화
     ```
 
 2. gh 명령어 모음
@@ -117,3 +130,12 @@ draft: false
     # deployment 리스트
     aws deploy list-deployments
     ``` 
+5. Hugo 명령어
+
+    ```bash
+    # 컨테이너 내부에서 사용
+    hugo server --bind 0.0.0.0 --baseURL=http://localhost --port 1313 -D
+
+    # 로컬머신에서 사용
+    hugo server -D 
+    ```

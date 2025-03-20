@@ -967,16 +967,16 @@ ailogy 라는 회사는 판교에서 창업한지 얼마 되지 않는 신생 �
     # Hugo 사이트 모듈 초기화
     hugo mod init github.com/dangtong76/ailogy
 
-    # 기본 설정 파일 삭제
+    # 기본 설정 파일 삭제 
     rm hugo.toml
 
     # 설정 파일 다운로드
     curl -O https://raw.githubusercontent.com/StefMa/hugo-fresh/master/exampleSite/hugo.yaml
 
-    # 로컬 사이트 실행 (Windows)
+    # 로컬 머신 실행 (Windows)
     hugo server -D
-    
-    # 컨테이너 IDE
+
+    # 컨테이너 IDE 실행 (ubuntu container)
     hugo server --bind 0.0.0.0 --baseURL=http://localhost --port 1314 -D
     ```
 
@@ -1506,6 +1506,7 @@ git push origin main
 ```
 ---
 ## 5. Simple WEB 쿠버네티스에 배포 하기
+
 ### 1. Docker 파일 작성
 ```dockerfile
 FROM nginx:alpine

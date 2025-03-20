@@ -8,6 +8,7 @@ draft: false
 ### 소스 클론 하기
 ```bash
 git clone https://github.com/dangtong-s-inc/istory-app.git
+gh repo fork 
 cd istory-app
 mkdir -p xinfra/istory-local
 cd xinfra/istory-local
