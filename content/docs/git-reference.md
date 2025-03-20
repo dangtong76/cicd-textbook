@@ -91,6 +91,9 @@ draft: false
 
     # 리포지토리 생성
     gh repo create <REPO_NAME> --public
+
+    # 리포지토리 Fork
+    gh repo fork <github https url>
     ```
 3. Terraform 명령어 모음
 
