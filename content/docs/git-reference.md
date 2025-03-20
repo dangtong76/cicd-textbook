@@ -45,6 +45,12 @@ draft: false
     # 스테이징 영역 특정 파일 삭제
     git reset HEAD <file>
 
+    # 브렌치 목록 보기 (로컬)
+    git branch 
+
+    # 브렌치 목록 보기 (원격격)
+    git branch -r
+    
     # 브렌치 삭제
     git branch -d <branch name>
 
@@ -55,6 +61,7 @@ draft: false
     git push origin --delete <branch name>
     git fetch -p # 삭제후 로컬 동기화
     ```
+
 
 2. gh 명령어 모음
 
