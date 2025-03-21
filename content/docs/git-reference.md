@@ -50,15 +50,17 @@ draft: false
 
     # 브렌치 목록 보기 (원격격)
     git branch -r
-    
+
     # 브렌치 삭제
     git branch -d <branch name>
 
     # 병합되지 않는 브렌치 삭제
     git branch -D <branch name>
+    git branch -D origin/tutor --remote
     
     # 원격 브랜치 삭제
     git push origin --delete <branch name>
+
     git fetch -p # 삭제후 로컬 동기화
     ```
 
@@ -149,3 +151,7 @@ draft: false
     # 로컬머신에서 사용
     hugo server -D 
     ```
+5. Java 관련
+    ```bash
+    # 애플리케이션 실행
+    ./gradlew bootRun
