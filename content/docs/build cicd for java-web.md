@@ -7,8 +7,9 @@ draft: false
 ## 1. Istory 로컬 개발 환경 만들기 
 ### 소스 클론 하기
 ```bash
-git clone https://github.com/dangtong-s-inc/istory-app.git
-gh repo fork 
+# git clone https://github.com/dangtong-s-inc/istory-app.git
+gh repo fork https://github.com/dangtong-s-inc/istory-app.git
+chmod 755 ./gradlew
 cd istory-app
 mkdir -p xinfra/istory-local
 cd xinfra/istory-local
@@ -25,6 +26,24 @@ WORKDIR /home/istory
 COPY springbootdeveloper-0.0.1-SNAPSHOT.jar /home/istory/istory.jar
 ENTRYPOINT ["java","-jar","/home/istory/istory.jar"]
 # docker run p 8080:8080 -e JAVA_OPTIONS="--Xms1024m --Xmx1024"
+```
+
+### docker-compose.yml
+```yml
+version: '3'
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: istory
+      MYSQL_USER: dangtong
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
 ```
 ### applicatin.yml 수정
 ```yml
