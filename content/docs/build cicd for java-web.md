@@ -5,9 +5,9 @@ date: 2025-03-18
 draft: false
 ---
 ## 1. Istory 로컬 개발 환경 만들기 
-### 소스 클론 하기
+ {{< embed-pdf url="/cicd-textbook/pdfs/3nd-week.pdf" >}}
+### 1-1.소스 클론 하기
 ```bash
-# git clone https://github.com/dangtong-s-inc/istory-app.git
 gh repo fork https://github.com/dangtong-s-inc/istory-app.git
 chmod 755 ./gradlew
 cd istory-app
@@ -15,20 +15,7 @@ mkdir -p xinfra/istory-local
 cd xinfra/istory-local
 ```
 
-### Dockerfile 작성
-파일명 : xinfra/istory-local/Dockerfile
-```dockerfile
-FROM eclipse-temurin:21-jdk-alpine
-VOLUME /tmp
-RUN addgroup -S istory && adduser -S istory -G istory
-USER istory
-WORKDIR /home/istory
-COPY springbootdeveloper-0.0.1-SNAPSHOT.jar /home/istory/istory.jar
-ENTRYPOINT ["java","-jar","/home/istory/istory.jar"]
-# docker run p 8080:8080 -e JAVA_OPTIONS="--Xms1024m --Xmx1024"
-```
-
-### docker-compose.yml
+### 1-2.Compose로 DB 컨테이너 생성
 ```yml
 version: '3'
 services:
@@ -45,11 +32,11 @@ services:
     volumes:
       - ./data:/var/lib/mysql
 ```
-### applicatin.yml 수정
+### 1-3. application.yml 수정
+파일위치 : src/main/resources/application.yml 
 ```yml
 spring:
   datasource:
-    # url: ${DATABASE_URL:jdbc:mysql://192.168.45.49:3306/istory}
     url: ${DATABASE_URL:jdbc:mysql://host.docker.internal:3306/istory}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:admin123}
@@ -66,70 +53,30 @@ spring:
     secret_key: study-springboot
 ```
 
-gitignore 파일에 아래 내용추가
-```gitignore
-# Secret
-xinfra/**/create_secret.sh
-```
-
-### 애플리케이션 실행
+### 1-4 로컬에서 애플리케이션 실행
+gradlew 가 위치한 최상위 디렉토리에서 아래 명령어 실행
 ```bash
 gradlew bootRun
-```
-### Secret 생성 (gh 커맨드 이용)
-
-```bash
-# action
-gh api -X PUT repos/dangtong76/istory-app/environments/action --silent
-gh secret set MYSQL_DATABASE --env action --body "istory"
-gh secret set DATABASE_URL --env action --body "jdbc:mysql://localhost:3306/istory"
-gh secret set MYSQL_USER --env action --body "istory"
-gh secret set MYSQL_PASSWORD --env action --body "user12345"
-gh secret set MYSQL_ROOT_PASSWORD --env action --body "admin12345"
-gh secret set AWS_ACCESS_KEY_ID --env action --body "AKIARXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh secret set AWS_SECRET_ACCESS_KEY --env action --body "awnmBEIN7ZXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh variable set AWS_REGION --env action --body "ap-northeast-2"
-
-# dev
-gh api -X PUT repos/dangtong76/istory-app/environments/dev --silent
-gh secret set MYSQL_DATABASE --env dev --body "istory"
-gh secret set DATABASE_URL --env dev --body "jdbc:mysql://istory-db.chi6s06gmvqk.ap-northeast-2.rds.amazonaws.com:3306/istory"
-gh secret set MYSQL_USER --env dev --body "istory"
-gh secret set MYSQL_PASSWORD --env dev --body "user12345"
-gh secret set MYSQL_ROOT_PASSWORD --env dev --body "admin12345"
-gh secret set AWS_ACCESS_KEY_ID --env dev --body "AKIARXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh secret set AWS_SECRET_ACCESS_KEY --env dev --body "awnmBEIN7ZXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh variable set AWS_REGION --env dev --body "ap-northeast-2"
-
-# Prod
-gh api -X PUT repos/dangtong76/istory-app/environments/prod --silent
-gh secret set MYSQL_DATABASE --env prod --body "istory"
-gh secret set DATABASE_URL --env prod --body "jdbc:mysql://istory-db.chi6s06gmvqk.ap-northeast-2.rds.amazonaws.com:3306/istory"
-gh secret set MYSQL_USER --env prod --body "istory"
-gh secret set MYSQL_PASSWORD --env prod --body "user12345"
-gh secret set MYSQL_ROOT_PASSWORD --env prod --body "admin12345"
-gh secret set AWS_ACCESS_KEY_ID --env prod --body "AKIARXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh secret set AWS_SECRET_ACCESS_KEY --env prod --body "awnmBEIN7ZXXXXXXXXXXXXXXXXXXXXXXXXX"
-gh variable set AWS_REGION --env prod --body "ap-northeast-2"
 ```
 ---
 ## 2. Istory ec2-single 클라우드 환경 구성
 
-### 1. 디렉토리 생성
+### 2-1 디렉토리 생성
 ```bash
 mkdir -p xinfra/ec2-single
 ```
-### 2. .gitignore 파일 생성
+### 2-2 .gitignore 파일 생성
+파일명 : xinfra/.gitignore
 ```bash
-.terraform
-.terraform.lock.hcl
-.terraform.tfstate
-.terraform.tfstate.backup
-create-secret.sh
+**/.terraform
+**/.terraform.lock.hcl
+**/*.tfstate
+**/*.tfstate.backup
+**/*.sh
 ```
-### 3. terraform 작성
+### 2-3 terraform 파일 작성
 1. provider.tf
-파일명 : xinfra/istory-local/provider.tf
+파일명 : xinfra/ec2-single/provider.tf
     ```terraform
     provider "aws" {
       region = "ap-northeast-2" # 사용할 AWS 리전
@@ -137,7 +84,7 @@ create-secret.sh
     ```
 
 2. vpc.tf
-    파일명 : xinfra/istory-local/vpc.tf
+    파일명 : xinfra/ec2-single/vpc.tf
     ```terraform
     # VPC 생성
     resource "aws_vpc" "dangtong-vpc" {
@@ -207,7 +154,7 @@ create-secret.sh
 
 3. security-group.tf
 
-    파일명 : xinfra/istory-local/security-group.tf
+    파일명 : xinfra/ec2-single/security-group.tf
     ```terraform
     resource "aws_security_group" "istory_nginx_sg" {
       name_prefix = "istory nginx sg"
@@ -264,7 +211,7 @@ create-secret.sh
     ```
 
 4. ec2.tf
-    파일명 : xinfra/istory-local/ec2.tf
+    파일명 : xinfra/ec2-single/ec2.tf
     ```terraform
     # TLS 프라이빗 키 생성 (공개 키 포함)
     resource "tls_private_key" "ec2_private_key" {
@@ -339,7 +286,7 @@ create-secret.sh
     ```
 
 5. iam.tf
-    파일명 : xinfra/istory-local/iam.tf
+    파일명 : xinfra/ec2-single/iam.tf
     ```terraform
     # CodeDeploy를 위한 EC2 IAM 역할
     resource "aws_iam_role" "ec2_codedeploy_role" {
@@ -414,7 +361,7 @@ create-secret.sh
     ```
 
 6. codedeploy.tf
-    파일명 : xinfra/istory-local/codedeploy.tf
+    파일명 : xinfra/ec2-single/codedeploy.tf
     ```terraform
     # CodeDeploy 애플리케이션 생성
     resource "aws_codedeploy_app" "istory-app" {
@@ -463,6 +410,7 @@ create-secret.sh
     } 
     ```
 7. s3.tf
+    파일명 : xinfra/ec2-single/s3.tf
     ```terraform
     # S3 버킷 생성
     resource "aws_s3_bucket" "istory-deploy-bucket" {
@@ -484,7 +432,7 @@ create-secret.sh
     }
     ```
 8. rds.tf
-    파일명 : xinfra/istory-local/rds.tf
+    파일명 : xinfra/ec2-single/rds.tf
     ```terraform
     # RDS 서브넷 그룹
     resource "aws_db_subnet_group" "istory_db_subnet_group" {
@@ -558,23 +506,26 @@ create-secret.sh
       description = "The master username for the database"
     }
     ```
-### 4. Istory CI 파이프라인 구성
+### 2-4 Istory Single CI 파이프라인 구성
   1. github 환경변수 및 Secret 등록 (dev)
       ```bash
       # secret for github action
       gh api -X PUT repos/dangtong76/istory-app/environments/dev --silent
-      gh secret set MYSQL_DATABASE --env dev --body "istory"
-      gh secret set DATABASE_URL --env dev --body "jdbc:mysql://istory-db.czm8suwcswqc.ap-northeast-2.rds.amazonaws.com:3306/istory"
-      gh secret set MYSQL_USER --env dev --body "istory"
-      gh secret set MYSQL_PASSWORD --env dev --body "user12345"
-      gh secret set MYSQL_ROOT_PASSWORD --env dev --body "admin12345"
-      gh secret set AWS_ACCESS_KEY_ID --env dev --body "AKIAXXXXXXXXXXXXXXXXXXXXXX"
-      gh secret set AWS_SECRET_ACCESS_KEY --env dev --body "yC0l2kx3XXXXXXXXXXXXXXXXXXXXXX"
+      gh secret set MYSQL_DATABASE --env dev --body "<database-name>"
+      gh secret set AWS_S3_BUCKET --env dev --body "<aws-s3-bucket-name>"
+      gh secret set DATABASE_URL --env dev --body "jdbc:mysql://<aws-rds-endpoint-url>:3306/<database-name>"
+      gh secret set MYSQL_USER --env dev --body "<db_username>"
+      gh secret set MYSQL_PASSWORD --env dev --body "<db_password>"
+      gh secret set MYSQL_ROOT_PASSWORD --env dev --body "<db_root_password>"
+      gh secret set AWS_ACCESS_KEY_ID --env dev --body "<aws_access_key_id>"
+      gh secret set AWS_SECRET_ACCESS_KEY --env dev --body "<aws_secret_access_key>"
       gh variable set AWS_REGION --env dev --body "ap-northeast-2"
       ```
+      github.com → istory-app repository → Settings → Environment → dev 에서 아래와 같이 등록된 결과를 볼 수 있습니다.
+       {{< figure src="/cicd-textbook/images/3-1.env.png" alt="CodeDeploy 이미지" class="img-fluid" width="40%">}}
   2. Script 작성
       
-      before_install.sh
+      파일명 : scripts/before_install.sh
       ```bash
       #!/bin/bash
       if [ -d /home/ec2-user/app ]; then
@@ -583,7 +534,7 @@ create-secret.sh
           mkdir -p /home/ec2-user/app
       fi
       ```
-      start_application.sh
+      파일명 : scripts/start_application.sh
       ```bash
       #!/bin/bash
       cd /home/ec2-user/app
@@ -610,7 +561,7 @@ create-secret.sh
       # 시작 대기
       sleep 10
       ```
-      stop_application.sh
+      파일명 : scripts/stop_application.sh
       ```bash
       #!/bin/bash
       # 이전 프로세스 종료
@@ -661,7 +612,8 @@ create-secret.sh
             timeout: 300
             runas: ec2-user
       ```
-  2. workflow 작성
+  2. github action workflow 작성
+      파일명 : .github/workflows/ec2-single-deploy.yml
       ```bash
       #1
       name: istory ci/cd dev pipeline
@@ -682,7 +634,7 @@ create-secret.sh
       jobs:
         build-and-upload:
           runs-on: ubuntu-latest
-          environment: dev
+          environment: dev # 환경변수 설정 확인
           steps:
             - name: 배포용 소스 다운로드
               uses: actions/checkout@v4
@@ -786,44 +738,35 @@ create-secret.sh
               run: |
                 aws deploy wait deployment-successful --deployment-id ${{ steps.deploy.outputs.deployment_id }}
       ```
-## 2. Istory ec2-scaling 환경 구성
-### 2-1 디렉토리 생성
+## 3. Istory ec2-scaling 환경 구성
+### 3-1 디렉토리 생성
 ```bash
 mkdir -p xinfra/ec2-scaling
 ```
-### 2-2 .gitignore 파일 생성
-파일 : xinfra/ec2-scaling/.gitignore
-```git
-.terraform
-.terraform.lock.hcl
-.terraform.tfstate
-.terraform.tfstate.backup
-create-secret.sh
-```
-### 2-3 creat-secret.sh 작성
-파일 : xinfra/ec2-scaling/create-secret.sh
-
+### 3-2 creat-secret.sh 작성
+파일 : xinfra/ec2-scaling/create-secret-stage.sh
 ```bash
 # secret for github action
-gh api -X PUT repos/dangtong76/istory-app/environments/prod --silent
-gh secret set MYSQL_DATABASE --env prod --body "istory"
-gh secret set DATABASE_URL --env prod --body "jdbc:mysql://istory-db.czm8suwcswqc.ap-northeast-2.rds.amazonaws.com:3306/istory"
-gh secret set MYSQL_USER --env prod --body "user"
-gh secret set MYSQL_PASSWORD --env prod --body "user12345"
-gh secret set MYSQL_ROOT_PASSWORD --env prod --body "admin12345"
-gh secret set AWS_ACCESS_KEY_ID --env prod --body "AKIARHQXXXXXXXXXXXXXXXXXX"
-gh secret set AWS_SECRET_ACCESS_KEY --env prod --body "yC0l2kx3ewwhpfNXXXXXXXXXXXXXXXXXX"
-gh secret set AWS_S3_BUCKET --env prod --body "istory-prod-deploy-bucket-084828561107"
-gh variable set AWS_REGION --env prod --body "ap-northeast-2"
+gh api -X PUT repos/dangtong76/istory-app/environments/stage  --silent
+gh secret set MYSQL_DATABASE --env stage --body "<database-name>"
+gh secret set AWS_S3_BUCKET --env stage --body "<aws-s3-bucket-name>"
+gh secret set DATABASE_URL --env stage --body "jdbc:mysql://<aws-rds-endpoint-url>:3306/<database-name>"
+gh secret set MYSQL_USER --env stage --body "<db_username>"
+gh secret set MYSQL_PASSWORD --env stage --body "<db_password>"
+gh secret set MYSQL_ROOT_PASSWORD --env stage --body "<db_root_password>"
+gh secret set AWS_ACCESS_KEY_ID --env stage --body "<aws_access_key_id>"
+gh secret set AWS_SECRET_ACCESS_KEY --env stage --body "<aws_secret_access_key>"
+gh variable set AWS_REGION --env stage --body "ap-northeast-2"
 ```
 
-### 2-4 Terraform 파일 작성
+### 3-3 Terraform 파일 작성
 
 1. 기존 ec2-single 내의 파일 복사해오기
     ```bash
     cp xinfra/ec2-single/*.tf xinfra/ec2-scaling/
     ```
-2. security-group.tf 에서 rds 보안 그룹 추가
+2. security-group.tf 파일에 rds 보안 그룹 추가
+    파일명 : xinfra/ec2-scaling/security-group.tf
     ```terraform
     # RDS 보안 그룹 추가
     resource "aws_security_group" "istory_rds_sg" {
@@ -837,7 +780,7 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
         protocol        = "tcp"
         security_groups = [
           aws_security_group.istory_nginx_sg.id,
-          aws_security_group.istory_prod_ec2_sg.id 
+          aws_security_group.istory_prod_ec2_sg.id # Autoscaling 그룹 보안 그룹 추가
           ]
       }
 
@@ -961,6 +904,7 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
     } 
     ```
 5. EC2 Auto Ascaling 그룹 추가 
+    파일명 : xinfra/ec2-scaling/launch-template.tf
     ```terraform
     # Launch Template
     resource "aws_launch_template" "istory_lt" {
@@ -1001,7 +945,10 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
         }
       }
     }
-
+    ```
+6. Auto Scaling Group 생성
+    파일명 : xinfra/ec2-scaling/autoscaling.tf
+    ```terraform
     # Auto Scaling Group
     resource "aws_autoscaling_group" "istory_asg" {
       name                = "istory-asg"
@@ -1024,6 +971,7 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
     }
     ```
 6. AutoScaling 용 Deploy Group 생성
+    파일명 : xinfra/ec2-scaling/codedeploy.tf
     ```terraform
     resource "aws_codedeploy_deployment_group" "istory_prod_deploy_group" {
       app_name               = aws_codedeploy_app.istory-app.name
@@ -1082,6 +1030,7 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
     }
     ```
 7. s3.tf 파일에 추가
+    파일명 : xinfra/ec2-scaling/s3.tf
     ```terraform
     # 운영용 S3 버킷
     resource "aws_s3_bucket" "istory-prod-deploy-bucket" {
@@ -1126,136 +1075,142 @@ gh variable set AWS_REGION --env prod --body "ap-northeast-2"
       description = "Name of the production deployment S3 bucket"
     }
     ```
-### 2-5 Istory CI 파이프라인 구성
-```terraform
-#5
-name: istory ci/cd dev pipeline
+### 3-4 Istory Scaling CI 파이프라인 구성
 
-permissions:
-  contents: read
-  security-events: write  # CodeQL 결과를 업로드하기 위한 권한
-  actions: read
+    파일명 : .github/workflows/ec2-scaling-deploy.yml
 
-on:
-  push:
-    branches: [ "test"]
-    paths:
-      - 'xinfra/ec2-scaling/**'
-      - '.github/workflows/ec2-scaling-deploy.yml'
-      - 'scripts/**'
-      - 'appspec.yml'
-jobs:
-  build-and-upload:
-    runs-on: ubuntu-latest
-    environment: prod
-    steps:
-      - name: 배포용 소스 다운로드
-        uses: actions/checkout@v4
+    ```yml
+    #5
+    name: istory scaling ci/cd pipeline
 
-      - name: 개발용 application.yml 생성
-        run: |
-          cat > src/main/resources/application.yml << EOF
-          spring:
-            datasource:
-              url: ${{ secrets.DATABASE_URL }} # 예dbc:mysql://localhost:3306/istory
-              username: ${{ secrets.MYSQL_USER }}
-              password: ${{ secrets.MYSQL_PASSWORD }}
-              driver-class-name: com.mysql.cj.jdbc.Driver
-            jpa:
-              database-platform: org.hibernate.dialect.MySQL8Dialect
-              hibernate:
-                ddl-auto: update
-              show-sql: true
-            application:
-              name: USER-SERVICE
-            jwt:
-              issuer: user@gmail.com
-              secret_key: study-springboot
-          management:
-            endpoints:
-              web:
-                exposure:
-                  include: health,info
-            endpoint:
-              health:
-                show-details: always
-          EOF
+    permissions:
+      contents: read
+      security-events: write  # CodeQL 결과를 업로드하기 위한 권한
+      actions: read
 
-      - name: AWS 접속정보 설정
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }} 
+    on:
+      push:
+        branches: [ "test"]
+        paths:
+          - 'xinfra/ec2-scaling/**'
+          - '.github/workflows/ec2-scaling-deploy.yml'
+          - 'scripts/**'
+          - 'appspec.yml'
+    jobs:
+      build-and-upload:
+        runs-on: ubuntu-latest
+        environment: prod
+        steps:
+          - name: 배포용 소스 다운로드
+            uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+          - name: 개발용 application.yml 생성
+            run: |
+              cat > src/main/resources/application.yml << EOF
+              spring:
+                datasource:
+                  url: ${{ secrets.DATABASE_URL }} # 예dbc:mysql://localhost:3306/istory
+                  username: ${{ secrets.MYSQL_USER }}
+                  password: ${{ secrets.MYSQL_PASSWORD }}
+                  driver-class-name: com.mysql.cj.jdbc.Driver
+                jpa:
+                  database-platform: org.hibernate.dialect.MySQL8Dialect
+                  hibernate:
+                    ddl-auto: update
+                  show-sql: true
+                application:
+                  name: USER-SERVICE
+                jwt:
+                  issuer: user@gmail.com
+                  secret_key: study-springboot
+              management:
+                endpoints:
+                  web:
+                    exposure:
+                      include: health,info
+                endpoint:
+                  health:
+                    show-details: always
+              EOF
 
-      - name: Build with Gradle
-        run: |
-          chmod +x gradlew
-          ./gradlew bootJar
+          - name: AWS 접속정보 설정
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-region: ${{ vars.AWS_REGION }} 
 
-      - name: Generate artifact name with timestamp
-        run: |
-          echo "ARTIFACT_NAME=springboot-$(date +'%Y%m%d-%H%M%S').jar" >> $GITHUB_ENV
+          - name: Set up JDK 17
+            uses: actions/setup-java@v4
+            with:
+              java-version: '17'
+              distribution: 'temurin'
 
-      - name: Create deployment package
-        run: |
-          mkdir -p deployment/scripts
-          cp build/libs/*.jar deployment/${{ env.ARTIFACT_NAME }}
-          cp appspec.yml deployment/
-          cp scripts/* deployment/scripts/
-          chmod +x deployment/scripts/*.sh
-          chmod +x deployment/*.jar
-          cd deployment && zip -r ../deploy.zip .          
+          - name: Build with Gradle
+            run: |
+              chmod +x gradlew
+              ./gradlew bootJar
 
-      - name: S3 업로드
-        run: |
-          # JAR 파일 업로드
-          aws s3 cp deployment/${{ env.ARTIFACT_NAME }} s3://${{ secrets.AWS_S3_BUCKET }}/artifacts/
-          # 배포 패키지 업로드
-          aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy/deploy.zip  
-      - name: 기존 진행중인 배포 삭제
-        run: |
-          DEPLOYMENTS=$(aws deploy list-deployments \
-            --application-name istory-app \
-            --deployment-group-name istory-prod-deploy-group \
-            --include-only-statuses "InProgress" \
-            --query 'deployments[]' \
-            --output text)
+          - name: Generate artifact name with timestamp
+            run: |
+              echo "ARTIFACT_NAME=springboot-$(date +'%Y%m%d-%H%M%S').jar" >> $GITHUB_ENV
 
-          if [ ! -z "$DEPLOYMENTS" ]; then
-            for deployment in $DEPLOYMENTS; do
-              echo "Stopping deployment $deployment"
-              aws deploy stop-deployment --deployment-id $deployment
-            done
-            # 잠시 대기하여 취소가 완료되도록 함
-            sleep 10
-          fi
-      - name: EC2 배포 수행
-        id: deploy
-        run: |
-          DEPLOYMENT_ID=$(aws deploy create-deployment \
-            --application-name istory-app \
-            --deployment-group-name istory-prod-deploy-group \
-            --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},key=deploy/deploy.zip,bundleType=zip \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --output text \
-            --query 'deploymentId')
-          echo "deployment_id=${DEPLOYMENT_ID}" >> $GITHUB_OUTPUT
+          - name: Create deployment package
+            run: |
+              mkdir -p deployment/scripts
+              cp build/libs/*.jar deployment/${{ env.ARTIFACT_NAME }}
+              cp appspec.yml deployment/
+              cp scripts/* deployment/scripts/
+              chmod +x deployment/scripts/*.sh
+              chmod +x deployment/*.jar
+              cd deployment && zip -r ../deploy.zip .          
 
-      - name: 배포 최종 성공 확인
-        run: |
-          aws deploy wait deployment-successful --deployment-id ${{ steps.deploy.outputs.deployment_id }}
-```
-> AutoScaling 그룹에 대한 배포시에 배포 옵션으로 CodeDeployDefault.EC2InPlaceAllAtOnce , CodeDeployDefault.OneAtATime , CodeDeployDefault.AllAtOnce 3가지 옵션 참고
+          - name: S3 업로드
+            run: |
+              # JAR 파일 업로드
+              aws s3 cp deployment/${{ env.ARTIFACT_NAME }} s3://${{ secrets.AWS_S3_BUCKET }}/artifacts/
+              # 배포 패키지 업로드
+              aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy/deploy.zip  
+          - name: 기존 진행중인 배포 삭제
+            run: |
+              DEPLOYMENTS=$(aws deploy list-deployments \
+                --application-name istory-app \
+                --deployment-group-name istory-prod-deploy-group \
+                --include-only-statuses "InProgress" \
+                --query 'deployments[]' \
+                --output text)
 
-## 3. Istory CI 항목 추가하기
-### 3-1 워크 플로우 실행 요약
+              if [ ! -z "$DEPLOYMENTS" ]; then
+                for deployment in $DEPLOYMENTS; do
+                  echo "Stopping deployment $deployment"
+                  aws deploy stop-deployment --deployment-id $deployment
+                done
+                # 잠시 대기하여 취소가 완료되도록 함
+                sleep 10
+              fi
+          - name: EC2 배포 수행
+            id: deploy
+            run: |
+              DEPLOYMENT_ID=$(aws deploy create-deployment \
+                --application-name istory-app \
+                --deployment-group-name istory-prod-deploy-group \
+                --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},key=deploy/deploy.zip,bundleType=zip \
+                --deployment-config-name CodeDeployDefault.OneAtATime \
+                --output text \
+                --query 'deploymentId')
+              echo "deployment_id=${DEPLOYMENT_ID}" >> $GITHUB_OUTPUT
+
+          - name: 배포 최종 성공 확인
+            run: |
+              aws deploy wait deployment-successful --deployment-id ${{ steps.deploy.outputs.deployment_id }}
+    ```
+AutoScaling 그룹에 대한 배포시에 배포 옵션으로 CodeDeployDefault.EC2InPlaceAllAtOnce , CodeDeployDefault.OneAtATime , CodeDeployDefault.AllAtOnce 3가지 옵션 참고
+
+## 4. Istory ec2-blue-green 환경 구성
+### 4-1 디렉토리 생성
+### 4-2 create-secret.sh 작성
+### 4-3 terraform 파일 작성
+### 4-4 istory blue-green ci 파이프라인 구성
 ```yml
 name: istory ci test
 
@@ -1307,7 +1262,8 @@ jobs:
         echo "* 실행 저장소: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
         echo "* 실행 브랜치: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
 ```
-### 3-2. 코스 스타일링 준수 검사
+## 5. CI 파이프라인 프로세스 추가
+### 5-1. 코스 스타일링 준수 검사
 1. 디렉토리 생성
     ```bash
     mkdir -p config/checkstyle
@@ -1423,8 +1379,4 @@ jobs:
               echo '```' >> $GITHUB_STEP_SUMMARY
             fi
     ```
-### 3-3. 
-### 3-4.
-### 3-5.
-## 4. Istory ec2-blue-green-scaling 환경 구성
 

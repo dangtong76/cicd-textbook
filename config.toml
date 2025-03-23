@@ -21,11 +21,13 @@ enableEmoji = true
 
 [markup]
   [markup.tableOfContents]
-    endLevel = 3
+    endLevel = 4
     startLevel = 1
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true # https://jdhao.github.io/2019/12/29/hugo_html_not_shown/
-  [markup.goldmark.parser]
-    [markup.goldmark.parser.attribute]
-      block = true
+      hardWraps = true # 모든 줄바꿈을 <br> 태그로 변환
+    [markup.goldmark.parser]
+      [markup.goldmark.parser.attribute]
+        block = true
+     
