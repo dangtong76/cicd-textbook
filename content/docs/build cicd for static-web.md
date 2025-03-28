@@ -1686,7 +1686,7 @@ git commit -m "add terraform"
 git push origin main
 ```
 ---
-## 5. Simple WEB 쿠버네티스에 배포 하기
+## 5. Simple WEB 쿠버네티스에 메뉴얼 배포하기
 
 ### 1. Docker 파일 작성
 ```dockerfile

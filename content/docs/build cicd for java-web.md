@@ -506,6 +506,12 @@ mkdir -p xinfra/ec2-single
       description = "The master username for the database"
     }
     ```
+8. terraform 적용
+    ```bash
+    terraform init
+    terraform plan
+    terraform apply
+    ```
 ### 2-4 Istory Single CI 파이프라인 구성
   1. github 환경변수 및 Secret 등록 (dev)
       ```bash
@@ -1075,6 +1081,12 @@ gh variable set AWS_REGION --env stage --body "ap-northeast-2"
       description = "Name of the production deployment S3 bucket"
     }
     ```
+8. terraform 적용
+    ```bash
+    terraform init
+    terraform plan
+    terraform apply
+    ```
 ### 3-4 Istory Scaling CI 파이프라인 구성
 
     파일명 : .github/workflows/ec2-scaling-deploy.yml
@@ -1208,8 +1220,30 @@ AutoScaling 그룹에 대한 배포시에 배포 옵션으로 CodeDeployDefault.
 
 ## 4. Istory ec2-blue-green 환경 구성
 ### 4-1 디렉토리 생성
+```bash
+mkdir -p xinfra/ec2-blue-green
+```
 ### 4-2 create-secret.sh 작성
+파일 : xinfra/ec2-blue-green/create-secret-stage.sh
+```bash
+# secret for github action
+gh api -X PUT repos/dangtong76/istory-app/environments/prod  --silent
+gh secret set MYSQL_DATABASE --env prod --body "<database-name>"
+gh secret set AWS_S3_BUCKET --env prod --body "<aws-s3-bucket-name>"
+gh secret set DATABASE_URL --env prod --body "jdbc:mysql://<aws-rds-endpoint-url>:3306/<database-name>"
+gh secret set MYSQL_USER --env prod --body "<db_username>"
+gh secret set MYSQL_PASSWORD --env prod --body "<db_password>" 
+gh secret set MYSQL_ROOT_PASSWORD --env prod --body "<db_root_password>"
+gh secret set AWS_ACCESS_KEY_ID --env prod --body "<aws_access_key_id>"
+gh secret set AWS_SECRET_ACCESS_KEY --env prod --body "<aws_secret_access_key>"
+gh variable set AWS_REGION --env prod --body "ap-northeast-2"
+```
 ### 4-3 terraform 파일 작성
+1. 기존 ec2-scaling 내의 파일 복사해오기
+    ```bash
+    cp xinfra/ec2-scaling/*.tf xinfra/ec2-blue-green/
+    ```
+2.   
 ### 4-4 istory blue-green ci 파이프라인 구성
 ```yml
 name: istory ci test
