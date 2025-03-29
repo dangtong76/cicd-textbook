@@ -257,6 +257,9 @@ metadata:
     istory.io/tier: app-lb
 ```
 ### kustomization.yml
+
+
+- kustomiztion.yml newTag 사용하기
 ```yml
 resources:
   - ../../base/istory-app
@@ -281,6 +284,37 @@ images:
 generatorOptions:
   disableNameSuffixHash: true
 ```
+kustomization.yml 에서 변경시에는 아래와 같이 명령어 사용
+```bash
+ kustomize edit set image istory=dagntong76/istory:${{ github.sha }}
+```
+- patch-deploy.yml 에서 사용하기기
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istory-app-deploy
+  annotations:
+    istory.io/env: dev
+    istory.io/tier: backend-app
+    istory.io/infra: aws
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: istory
+          image: dangtong76/istory:latest
+```
+이경우는 아래와 같이 workflow 에서 SED 를 사용
+
+```bash
+sed -i "s|image: .*|image: dangtong76/istory:${{ github.sha }}|" overlay/aws-dev/patch-deploy.yml
+```
+| 방식 | 장점 | 단점 |
+|-------------------------|-----------------------|----------------------|
+| kustomization + newTag | kustomize 명령어 사용 | 전체 적용 |
+| istory-deploy.yml 사용 | 이미지 여러개일 경우 적용 | sed 명령 사용 | 
 
 ## 연습문제 aws-prod overlay 생성
 - istory prod 요구사항
