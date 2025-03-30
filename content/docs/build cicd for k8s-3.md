@@ -318,16 +318,13 @@ spec:
 ```bash
 sed -i "s|image: .*|image: dangtong76/istory:${{ github.sha }}|" overlay/aws-dev/patch-deploy.yml
 ```
-| 방식 | 장점 | 단점 |
-|-------------------------|-----------------------|----------------------|
-| kustomization + newTag | kustomize 명령어 사용 | 전체 적용 |
-| istory-deploy.yml 사용 | 이미지 여러개일 경우 적용 | sed 명령 사용 | 
+
 
 ## 연습문제 aws-prod overlay 생성
 - istory prod 요구사항
   -  AWS RDS 를 사용합니다.
   -  Replica 개수를 3로 합니다.
-  -  istory.io 관련 annotion을 prod 기준으로 수정
+  -  istory.io 관련 annotation을 prod 기준으로 수정
 
 
 
