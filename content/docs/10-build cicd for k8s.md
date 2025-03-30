@@ -23,7 +23,7 @@ graph TD;
 | 플랫폼 리포지토리     | https://github.com/dangtong76/istory-platform.git | YAML | Module |
 
 ## 2. 리포지토리 구성하기
-목표하는 폴더 구조는 아래와 같습니다.
+- 리포지토리 기본 구조
 ```bash
 xinfra/
 ├── docker/
@@ -124,3 +124,32 @@ mkdir -p istory-platform/overlay/aws-dev
 mkdir -p istory-platform/overlay/aws-prod
 mkdir -p istory-platform/overlay/local-dev
 ```
+
+## 4. 도커 파일 빌드 및 업로드
+### 4.1 도커 파일생성
+파일위치 : xinfra/docker/Dockerfile
+```dockerfile
+FROM eclipse-temurin:17-jdk-alpine
+VOLUME /tmp
+RUN addgroup -S istory && adduser -S istory -G istory
+USER istory
+WORKDIR /home/istory
+COPY *.jar /home/istory/istory.jar
+ENTRYPOINT ["java","-jar","/home/istory/istory.jar"]
+```
+### 4.2 도커 파일 빌드 및 업로드
+```bash
+# 컨테이너 이미지 빌드
+docker build -t <your-docker-hub-id>/istory:1 .
+
+# latest 태그 만들기
+docker tag <your-docker-hub-id>/istory:1 <your-docker-hub-id>/istory:latest
+
+# Docker hub 리포지토리 로그인
+docker login --username <your-docker-hub-id>
+
+# 업로드
+docker push <your-docker-hub-id>/istory:1
+docker push <your-docker-hub-id>/istory:latest
+```
+
