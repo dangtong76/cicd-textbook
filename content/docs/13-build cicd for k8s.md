@@ -13,10 +13,13 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 
 ## 9-2 로드밸런서 추가하기
 ```bash
+# Patch일 경우 Annotation이 없어서 Classic LB가 생성되기 때문에 외부 접속 가능
+# 일반적으로 Patch가 아니라 Create일 경우 Network LB 생성되고, 이때는 Annotation 있어야함.
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
 ## 9-3 ArgoCD CLI 설치
+웹 VSCODE IDE를 사용하는 경우 이미 설치 되어 있음
 ### Linux
 ```bash
 # latest Version
@@ -72,3 +75,35 @@ Context 'a7eb417c510ec4551933abc911356e6e-1770617535.ap-northeast-2.elb.amazonaw
 ```bash
 argocd account update-password --current-password <현재패스워드> --new-password <새로운패스워드>
 ```
+
+## 9-4 브라우저 기반 설정
+### 리포지토리 설정
+- 웹 메뉴 : `Settings` → `Repositories` → `CONNECT REPO` 
+| 설정 항목 | 값 | 설명 |
+|-----------------------|----------------------|---------------------|
+| connection method | VIA HTTPS | Git 리포지토리 접속 방식 |
+| Type | git | 리포지토리 타입(git | Helm) |
+| Name | istory-dev | 참조 이름 |
+| Project | Default | Git 의 브렌치 이름 |
+| Repository URL | `https://github.com/<github-id>/istory-platform.git` | Platform 리포지토리 URL |
+<br>
+- 설정화면 참조
+{{< figure src="/cicd-textbook/images/argocd-repo1.png" alt="argocd 리포지토리 설정" class="img-fluid" width="60%" >}}
+
+### 애플리케이션 설정
+- 웹 메뉴 : `Application` → `NEW APP`
+
+| 설정 항목 | 값 | 설명 |
+|-----------------------|----------------------|---------------------|
+| Application Name | istory-dev | - |
+| Project Name | default | - |
+| Repository URL | `https://github.com/<github-id>/istory-platform.git` | - |
+| Path | overlay | aws-dev |
+| Cluster URL | https://kubernetes.default.svc | - |
+| Namespace | istory-dev | - |
+<br>
+- 설정 화면 참조 
+{{< figure src="/cicd-textbook/images/argocd-application-1.png" alt="argocd 애플리케이션 설정1" class="img-fluid" width="60%" >}}
+{{< figure src="/cicd-textbook/images/argocd-application-2.png" alt="argocd 애플리케이션 설정2" class="img-fluid" width="60%" >}}
+
+## 9-5 명령어 기반 설정
