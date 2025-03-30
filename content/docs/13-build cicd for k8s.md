@@ -76,7 +76,7 @@ Context 'a7eb417c510ec4551933abc911356e6e-1770617535.ap-northeast-2.elb.amazonaw
 argocd account update-password --current-password <현재패스워드> --new-password <새로운패스워드>
 ```
 
-## 9-4 브라우저 기반 설정
+## 9-5 브라우저 기반 설정
 ### 리포지토리 설정
 - 웹 메뉴 : `Settings` → `Repositories` → `CONNECT REPO` 
 | 설정 항목 | 값 | 설명 |
@@ -106,4 +106,18 @@ argocd account update-password --current-password <현재패스워드> --new-pas
 {{< figure src="/cicd-textbook/images/argocd-application-1.png" alt="argocd 애플리케이션 설정1" class="img-fluid" width="60%" >}}
 {{< figure src="/cicd-textbook/images/argocd-application-2.png" alt="argocd 애플리케이션 설정2" class="img-fluid" width="60%" >}}
 
-## 9-5 명령어 기반 설정
+### 데이터베이스 시크릿 생성 하기
+데이터베이스 계정 및 패스워드는 **Github Action Secret**을 이용해서 동적으로 생성 하기 때문에 최초에 싱크 시에는 직접 **K8s Secret** 객체를 만들어야 함.
+**Workflow** 에서는 **Github Action Secret** 을 참조해서 계속 업데이트(kubectl apply ...) 가능하도록 해야 함.
+```bash
+kubectl create secret generic istory-db-secret \
+--namespace istory-dev \
+--from-literal=MYSQL_USER=user \
+--from-literal=MYSQL_PASSWORD=user12345 \ 
+--from-literal=MYSQL_DATABASE=istory \
+--from-literal=MYSQL_ROOT_PASSWORD=admin123
+```
+### Sync 하기
+- 웹 메뉴 : `Application` → `SYNC` → `Synchronize`
+## 9-6 명령어 기반 설정
+추후 업데이트 예정 ...
