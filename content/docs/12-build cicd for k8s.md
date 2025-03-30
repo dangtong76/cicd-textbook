@@ -5,8 +5,8 @@ date: 2025-03-18
 draft: false
 ---
 
-## 8-1. istory-app base 생성
-### istory-app-config.yml
+## 1. istory-app base 생성
+### 1.1 istory-app-config.yml
 위치 : xinfra/istory-platform/base/istory-app
 ```yml
 apiVersion: v1
@@ -21,7 +21,7 @@ data:
   spring.jpa.show-sql: 'true'
   spring.application.name: 'USER-SERVICE'
 ```
-### istory-app-deploy.yml
+### 1.2 istory-app-deploy.yml
 위치 : xinfra/istory-platform/base/istory-app
 컨테이너 이미지 이름을 반드시 자신의 Docker Hub 계정으로 변경 해야함.
 
@@ -94,7 +94,7 @@ spec:
             name: istory-app-config
       restartPolicy: Always
 ```
-### istory-app-lb.yml
+### 1.3 istory-app-lb.yml
 위치 : xinfra/istory-platform/base/istory-app
 ```yml
 apiVersion: v1
@@ -115,7 +115,7 @@ spec:
       port: 80
       targetPort: 8080
 ```
-### kustomiztion.yml
+### 1.4 kustomiztion.yml
 위치 : xinfra/istory-platform/base/istory-app
 ```yml
 resources:
@@ -124,8 +124,8 @@ resources:
   - istory-app-lb.yml
 ```
 
-## 8-2. istory-db base 생성
-### istory-db-lb.yml
+## 2. istory-db base 생성
+### 2.1 istory-db-lb.yml
 위치 : xinfra/istory-platform/base/istory-db/
 ```yml
 apiVersion: v1
@@ -140,7 +140,7 @@ spec:
       protocol: TCP
       port: 3306
 ```
-### istory-db-pod.yml
+### 2.2 istory-db-pod.yml
 위치 : xinfra/istory-platform/base/istory-db/
 ```yml
 apiVersion: v1
@@ -167,7 +167,7 @@ spec:
       persistentVolumeClaim:
         claimName: mysql-pv-claim
 ```
-### istory-db-pvc.yml
+### 2.3 istory-db-pvc.yml
 위치 : xinfra/istory-platform/base/istory-db
 ```yml
 apiVersion: v1
@@ -184,7 +184,7 @@ spec:
     requests:
       storage: 10Gi
 ```
-### istory-db-sc.yml
+### 2.4 istory-db-sc.yml
 위치 : xinfra/istory-platform/base/istory-db
 ```yml
 apiVersion: storage.k8s.io/v1
@@ -208,8 +208,8 @@ resources:
   - istory-db-sc.yml
 ```
 
-## 8-3. istroy-tools base 생성
-### busybox.yml
+## 3. istroy-tools base 생성
+### 3.1 busybox.yml
 위치 : xinfra/istory-platform/base/istory-tools
 ```yml
 apiVersion: v1
@@ -223,15 +223,15 @@ spec:
       command: ["sleep", "infinity"]
 ```
 
-### kustomization.yml
+### 3.2 kustomization.yml
 위치 : xinfra/istory-platform/base/istory-tools
 ```yml
 resources:
   - busybox.yml
 ```
 
-## 8-4. aws-dev overlay 생성
-### patch-deploy.yml
+## 4. aws-dev overlay 생성
+### 4.1 patch-deploy.yml
 ```yml
 apiVersion: apps/v1
 kind: Deployment
@@ -244,7 +244,7 @@ metadata:
 spec:
   replicas: 1
 ```
-### patch-lb-annotaions.yml
+### 4.2 patch-lb-annotaions.yml
 ```yml
 apiVersion: v1
 kind: Service
@@ -258,7 +258,7 @@ metadata:
     istory.io/env: dev
     istory.io/tier: app-lb
 ```
-### kustomization.yml
+### 4.3 kustomization.yml
 
 
 - kustomiztion.yml newTag 사용하기
