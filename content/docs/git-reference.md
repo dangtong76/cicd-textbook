@@ -33,8 +33,11 @@ draft: false
     # 원격의 저장소 내용을 로컬로 업데이트 하고 그위에 로커 커밋을 추가함
     git pull --rebase 
 
-    # 해당 커밋으로 되돌아감
+    # 해당 커밋으로 되돌아감 - 이후 커밋 히스토리 보관
     git revert <commit hash ID> 
+
+    # 해당 커밋바로 이전(^)으로 돌아감 - 이후 커밋 히스토리는 삭제됨
+    git reset --hard <commit hash ID>^
 
     # 커밋 히스토리 보기
     git log 
@@ -141,6 +144,9 @@ draft: false
 
     # deployment 리스트
     aws deploy list-deployments
+
+    # aws eks 로 부터 kubectl config 업데이트 하기
+    aws eks update-kubeconfig --region ap-northeast-2 --name istory
     ``` 
 5. Hugo 명령어
 

@@ -64,18 +64,24 @@ gh auth status
 # 계정 연결
 gh auth login 
 
-# 애플리케이션 리포지토리 Fork
-gh fork https://github.com/dangtong76/istory-web-k8s.git
-mkdir -p xinfra/docker
+# 애플리케이션 리포지토리 Fork with Clone
+gh repo fork https://github.com/dangtong76/istory-web-k8s.git
+
+# 인프라 리포지토리 fork without Clone
+gh repo fork https://github.com/dangtong76/istory-infra.git --clone=false --remote=false
+
+# 플랫폼 리포지토리 fork without Clone
+gh repo fork https://github.com/dangtong76/istory-infra.git --clone=false --remote=false
 ```
 
 - 원결 리포지 토리 추가
 ```bash
+cd istory-web-k8s
 # 인프라 리포지토리 fork 하고 Clone 도 함께 수행
-git submodule add https://github.com/dangtong76/istory-infra.git xinfra/istory-infra
+git submodule add https://github.com/<your-github-id>/istory-infra.git xinfra/istory-infra
 
 # 플랫폼 리포지토리 fork 하고 Clone 도 함께 수행
-git submodule add https://github.com/dangtong76/istory-platform.git xinfra/istory-platform
+git submodule add https://github.com/<your-github-id>/istory-platform.git xinfra/istory-platform
 ```
 - 만약 추가 되지 않으면 아래 내용 수행
 ```bash
@@ -99,10 +105,10 @@ cat .gitmodules
 ==================================출력==================================
 [submodule "xinfra/istory-infra"]
         path = xinfra/istory-infra
-        url = https://github.com/dangtong76/istory-infra.git
+        url = https://github.com/<your-github-id>/istory-infra.git
 [submodule "xinfra/istory-platform"]
         path = xinfra/istory-platform
-        url = https://github.com/dangtong76/istory-platform.git
+        url = https://github.com/<your-github-id>/istory-platform.git
 ==================================출력==================================
 ```
 
@@ -117,5 +123,4 @@ mkdir -p istory-platform/base/istory-tools
 mkdir -p istory-platform/overlay/aws-dev
 mkdir -p istory-platform/overlay/aws-prod
 mkdir -p istory-platform/overlay/local-dev
-
 ```
