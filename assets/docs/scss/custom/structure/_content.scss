@@ -79,7 +79,30 @@
     font-weight: 700;
     color: var(--body-color);
 }
+// 헤딩 크기 조정
+// 헤딩 태그 크기 조절 - 기존 구조 유지하며 추가
+.docs-content .main-content h2 {
+    font-size: 1.5rem;  // 더 작은 크기로 설정
+}
 
+.docs-content .main-content h2 {
+    font-size: 1.3rem;
+}
+
+.docs-content .main-content h3 {
+    font-size: 1.0rem;
+}
+
+.docs-content .main-content h4 {
+    font-size: 0.7rem;
+}
+
+.docs-content .main-content h5,
+.docs-content .main-content h6 {
+    font-size: 0.7rem;
+}
+
+// 헤딩 크기 조정 종료
 .docs-content .content-title {
     font-weight: 700;
     align-self: center;
