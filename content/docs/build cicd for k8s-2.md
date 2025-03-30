@@ -810,7 +810,7 @@ variable "eks_namespace_roles" {
 ```
 ## 7-8. Terraform 적용
 ```bash
-terraform ini
+terraform init
 terraform plan
 terraform apply
 ```
@@ -829,4 +829,15 @@ NAME                                            STATUS   ROLES    AGE   VERSION
 ip-10-1-3-86.ap-northeast-2.compute.internal    Ready    <none>   47m   v1.31.5-eks-5d632ec
 ip-10-1-4-114.ap-northeast-2.compute.internal   Ready    <none>   47m   v1.31.5-eks-5d632ec
 
+```
+
+## 7-10 삭제
+```bash
+# 쿠버네티스 객체 삭제
+kubectl delete all -n argocd
+kubectl delete all -n istory-dev
+kubectl delete all -n istory-prod
+
+# terraform 삭제
+terraform destroy
 ```

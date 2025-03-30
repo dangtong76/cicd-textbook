@@ -23,6 +23,8 @@ data:
 ```
 ### istory-app-deploy.yml
 위치 : xinfra/istory-platform/base/istory-app
+컨테이너 이미지 이름을 반드시 자신의 Docker Hub 계정으로 변경 해야함.
+
 ```yml
 apiVersion: apps/v1
 kind: Deployment
@@ -59,7 +61,7 @@ spec:
                     'until mysqladmin ping -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -h istory-db-lb; do echo waiting for database; sleep 2; done;']
       containers:
         - name: istory
-          image: dangtong/istory:latest
+          image: <your-docker-hub-account-id>/istory:latest # 변경필요
           envFrom:
             - configMapRef:
                 name: istory-app-config
@@ -278,7 +280,8 @@ patches:
       name: istory-app-deploy
 
 images:
-  - name: dangtong76/istory
+  # base/istory-app/istory-app-deploy.yml 내의 이미지 이름과 동일해야 변경됨
+  - name: <your-docker-hub-account-id>/istory # 변경필요 
     newTag: latest
 
 generatorOptions:
@@ -286,9 +289,13 @@ generatorOptions:
 ```
 kustomization.yml 에서 변경시에는 아래와 같이 명령어 사용
 ```bash
- kustomize edit set image istory=dagntong76/istory:${{ github.sha }}
+# 커밋 해시를 이용한 태깅 방법
+kustomize edit set image istory=dagntong76/istory:${{ github.sha }}
+# 워크플로우 수행 횟수를 이용한 태깅 방법 
+kustomize edit set image istory=dagntong76/istory:${{ github.run_number }}
 ```
 - patch-deploy.yml 에서 사용하기기
+컨테이너 이미지 부분을 자신의 Docker Hub 계정의 이미지로 변경
 ```yml
 apiVersion: apps/v1
 kind: Deployment
@@ -304,9 +311,9 @@ spec:
     spec:
       containers:
         - name: istory
-          image: dangtong76/istory:latest
+          image: <your-docker-hub-account-id>/istory:latest # 변경필요
 ```
-이경우는 아래와 같이 workflow 에서 SED 를 사용
+이 경우는 아래와 같이 workflow 에서 SED 를 사용
 
 ```bash
 sed -i "s|image: .*|image: dangtong76/istory:${{ github.sha }}|" overlay/aws-dev/patch-deploy.yml
@@ -323,6 +330,6 @@ sed -i "s|image: .*|image: dangtong76/istory:${{ github.sha }}|" overlay/aws-dev
   -  istory.io 관련 annotion을 prod 기준으로 수정
 
 
-  
+
 
 
