@@ -437,7 +437,7 @@ jobs:
             --from-literal=MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
             --from-literal=DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --from-literal=MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            --namespace=${{ secrets.}} \
+            --namespace=${{ secrets.K8S_NAMESPACE}} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: 이미지 태그 업데이트 (kustomize)
