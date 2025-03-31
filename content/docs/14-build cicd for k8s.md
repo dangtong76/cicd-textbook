@@ -288,7 +288,7 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git commit -am "Update image tag to ${{ env.DOCKER_TAG }}"
-          git push origin ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }} 
 ```
 
 ### 2.5 전체파일
