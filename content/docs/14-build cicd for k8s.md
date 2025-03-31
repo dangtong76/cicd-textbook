@@ -102,7 +102,9 @@ gh secret set GIT_ACCESS_TOKEN --env k8s-dev --body "<your-github-access-token>"
 gh secret set GIT_USERNAME --env k8s-dev --body "<your-github-id>"
 gh secret set GIT_PLATFORM_REPO_NAME --env k8s-dev --body "<your-githhub-repository-name>"
 
-gh secret set CLUSTER_NAME --env k8s-dev --body "istory"
+gh secret set K8S_CLUSTER_NAME --env k8s-dev --body "istory"
+gh secret set K8S_NAMESPACE --env k8s-dev --body "istory-dev"
+
 gh secret set AWS_ACCESS_KEY_ID --env k8s-dev --body "<your-aws-access-key-id>"
 gh secret set AWS_SECRET_ACCESS_KEY --env k8s-dev --body "<your-aws-access-key>"
 gh secret set AWS_REGION --env k8s-dev --body "<your-aws-region>"
@@ -170,7 +172,7 @@ jobs:
 
       - name: kubeconfig 업데이트
         run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.CLUSTER_NAME }}
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.K8S_CLUSTER_NAME }}
 
       - name: kustomize 설치
         run: |
@@ -274,7 +276,7 @@ jobs:
             --from-literal=MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
             --from-literal=DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --from-literal=MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            --namespace=default \
+            --namespace=${{ secrets.K8S_NAMESPACE}} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: 이미지 태그 업데이트 (kustomize)
@@ -435,7 +437,7 @@ jobs:
             --from-literal=MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
             --from-literal=DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --from-literal=MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            --namespace=default \
+            --namespace=${{ secrets.}} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: 이미지 태그 업데이트 (kustomize)
